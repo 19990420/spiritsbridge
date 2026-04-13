@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpiritsBridge — 日本のクラフト蒸留所とバーテンダーをつなぐ</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:     #0F2338;
+  --navy-l:   #1A354F;
+  --gold:     #D4AF37;
+  --gold-d:   #B8860B;
+  --black:    #0a0a0a;
+  --dark-bg:  #1a1a1a;
+  --white:    #FFFFFF;
+  --gray-l:   #E8E8E8;
+  --gray-m:   #999999;
+  --gray-d:   #555555;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Garamond', 'Georgia', serif;
+  background: var(--black);
+  color: var(--white);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.3px;
+}
+
+/* ═══ NAV ═══ */
+.nav {
+  background: var(--navy);
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  position: sticky; top: 0; z-index: 200;
+  border-bottom: 1px solid var(--gold);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+  letter-spacing: 4px;
+}
+.nav-logo {
+  color: var(--gold);
+  font-size: 24px; font-weight: 500;
+  cursor: pointer; text-transform: uppercase;
+}
+.nav-right { display: flex; align-items: center; gap: 32px; }
+.nav-tag {
+  color: var(--gray-m);
+  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ═══ VIEW SWITCH ═══ */
+.view { display: none; }
+.view.active { display: block; animation: fadeIn .5s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hero {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  text-align: center;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://res.cloudinary.com/dqkmg9vrj/image/upload/ambitious-studio-rick-barrett-TSkUCyCuVH4-unsplash_isdjto.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.35) 0%,
+    rgba(0,0,0,0.55) 30%,
+    rgba(0,0,0,0.60) 60%,
+    rgba(0,0,0,0.40) 100%
+  );
+}
+
+.hero-inner {
+  position: relative; z-index: 1;
+  padding: 60px 48px;
+  max-width: 960px;
+}
+
+.hero h1 {
+  color: var(--white);
+  font-size: 68px; font-weight: 400; line-height: 1.15;
+  margin-bottom: 24px;
+  letter-spacing: -1.5px;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.8);
+}
+
+.hero h1 .accent { color: var(--gold); font-weight: 500; }
+
+.hero-sub {
+  color: rgba(255,255,255,0.80);
+  font-size: 18px; line-height: 2.05;
+  max-width: 640px; margin: 0 auto;
+  letter-spacing: 0.2px;
+  font-weight: 300;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.7);
+}
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.layout {
+  display: flex; align-items: flex-start;
+  max-width: 1600px; margin: 0 auto;
+  padding: 0; gap: 0;
+  background: var(--dark-bg);
+}
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  padding: 80px 44px;
+  background: var(--navy);
+  border-right: 1px solid rgba(212,175,55,0.2);
+  position: sticky; top: 68px;
+  height: calc(100vh - 68px);
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  color: var(--gold);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(212,175,55,0.3);
+}
+
+.sb-section {
+  margin-bottom: 56px;
+}
+
+.sb-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--gray-m);
+  margin-bottom: 18px;
+}
+
+.search-box {
+  display: flex;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 1px; overflow: hidden;
+  background: rgba(255,255,255,0.02);
+}
+
+.search-box input {
+  flex: 1; padding: 12px 14px;
+  border: none; font-size: 12px;
+  color: var(--white); font-family: inherit;
+  background: transparent; outline: none;
+}
+
+.search-box input::placeholder { color: var(--gray-m); }
+
+.search-box button {
+  background: transparent; color: var(--gold); border: none;
+  padding: 0 14px; cursor: pointer; font-size: 14px;
+  transition: color .2s;
+}
+
+.search-box button:hover { color: var(--gray-l); }
+
+/* フィルターピル */
+.filter-pills { display: flex; flex-direction: column; gap: 8px; }
+
+.fp {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 1px; background: transparent;
+  cursor: pointer; font-size: 12px; font-family: inherit;
+  color: var(--gray-l); transition: all .25s; text-align: left;
+  font-weight: 400;
+}
+
+.fp:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212,175,55,0.08);
+}
+
+.fp.active {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+.fp-count {
+  margin-left: auto; font-size: 11px; font-weight: 700;
+  background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 1px;
+  color: inherit;
+}
+
+.fp.active .fp-count { background: rgba(0,0,0,0.15); }
+
+/* 価格スライダー */
+.price-slider {
+  width: 100%; accent-color: var(--gold);
+  cursor: pointer; margin-bottom: 12px;
+}
+
+.price-label {
+  display: inline-block;
+  background: transparent;
+  color: var(--gold);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* 地域リスト */
+.region-list { display: flex; flex-direction: column; gap: 10px; }
+
+.region-item {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; cursor: pointer; color: var(--gray-l);
+  transition: color .2s;
+}
+
+.region-item input[type=checkbox] {
+  accent-color: var(--gold);
+  width: 15px; height: 15px; cursor: pointer;
+  flex-shrink: 0;
+}
+
+.region-item:hover { color: var(--gold); }
+
+/* リセット */
+.btn-reset {
+  width: 100%; padding: 12px;
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 1px;
+  font-size: 10px; font-weight: 600; font-family: inherit;
+  color: var(--gold); cursor: pointer;
+  transition: all .25s; letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.btn-reset:hover {
+  background: rgba(212,175,55,0.2);
+  border-color: var(--gold);
+}
+
+/* ══════════════════════════════════════════
+   PRODUCTS COLUMN
+══════════════════════════════════════════ */
+.products-col {
+  flex: 1;
+  min-width: 0;
+  padding: 80px 60px;
+  background: var(--dark-bg);
+}
+
+.prod-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 60px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+
+.prod-header h2 {
+  font-size: 32px; font-weight: 400;
+  color: var(--gold); letter-spacing: 2px;
+}
+
+.prod-count-badge {
+  background: transparent;
+  color: var(--gray-m);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   PRODUCT GRID & CARDS
+══════════════════════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 44px;
+}
+
+.card {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  overflow: hidden;
+  transition: all .35s ease;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--gold);
+}
+
+.card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 16px 56px rgba(212,175,55,0.18);
+  transform: translateY(-3px);
+}
+
+.card-body {
+  padding: 32px 28px 24px;
+  flex: 1; display: flex; flex-direction: column;
+}
+
+.card-distillery-name {
+  font-size: 11px; font-weight: 600;
+  color: var(--gold); cursor: pointer;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 8px;
+  transition: opacity .2s;
+}
+
+.card-distillery-name:hover { opacity: 0.8; }
+
+.card-name {
+  font-size: 20px; font-weight: 500;
+  line-height: 1.45; color: var(--white);
+  margin-bottom: 14px; letter-spacing: -0.2px;
+}
+
+.card-tags {
+  display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 9px; font-weight: 700;
+  padding: 3px 9px; border-radius: 1px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(212,175,55,0.16);
+  color: var(--gold);
+}
+
+.card-specs {
+  font-size: 11px; color: var(--gray-m);
+  letter-spacing: 0.8px; margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.card-desc {
+  font-size: 13px; color: rgba(255,255,255,0.65);
+  line-height: 1.8; flex: 1; margin-bottom: 18px;
+  font-weight: 300;
+}
+
+.card-price {
+  font-size: 28px; font-weight: 700;
+  color: var(--gold); margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.card-price-label {
+  font-size: 9px; color: var(--gray-m);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.card-actions {
+  display: flex; flex-direction: column; gap: 10px;
+  border-top: 1px solid rgba(212,175,55,0.2);
+  padding-top: 20px;
+}
+
+.btn-inquiry {
+  width: 100%; padding: 15px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none; border-radius: 1px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all .25s;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(212,175,55,0.25);
+}
+
+.btn-inquiry:hover {
+  background: var(--gray-l);
+  box-shadow: 0 8px 28px rgba(212,175,55,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-story {
+  width: 100%; padding: 12px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid rgba(212,175,55,0.4);
+  border-radius: 1px; font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .25s;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.btn-story:hover {
+  border-color: var(--gold);
+  background: rgba(212,175,55,0.08);
+  color: var(--gray-l);
+}
+
+.empty {
+  text-align: center; padding: 100px 32px;
+  color: var(--gray-m); font-size: 14px;
+  grid-column: 1 / -1; line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ══════════════════════════════════════════
+   DISTILLERY DETAIL VIEW
+══════════════════════════════════════════ */
+.d-hero {
+  position: relative; min-height: 480px;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
+}
+
+.d-hero-bg { position: absolute; inset: 0; background: var(--navy); }
+
+.d-hero-inner {
+  position: relative; z-index: 1;
+  padding: 48px 60px;
+  width: 100%;
+}
+
+.d-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--gray-l); font-size: 11px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 1px; padding: 9px 14px;
+  cursor: pointer; font-family: inherit; margin-bottom: 32px;
+  transition: all .25s; letter-spacing: 0.8px;
+  font-weight: 500;
+}
+
+.d-back:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(212,175,55,0.08);
+}
+
+.d-hero-meta { display: flex; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
+.d-hero-info { flex: 1; }
+
+.d-hero-badge {
+  display: inline-block;
+  background: rgba(212,175,55,0.15);
+  border: 1px solid rgba(212,175,55,0.4);
+  color: var(--gold); font-size: 9px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 1px; margin-bottom: 14px;
+}
+
+.d-hero-name {
+  color: var(--white);
+  font-size: 42px; font-weight: 400; margin-bottom: 8px;
+  line-height: 1.2; letter-spacing: -0.5px;
+}
+
+.d-hero-region { color: var(--gray-m); font-size: 13px; margin-bottom: 6px; font-weight: 400; }
+.d-hero-rep    { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 400; }
+
+.d-rating { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.d-stars  { color: var(--gold); font-size: 17px; letter-spacing: 2px; }
+.d-score  { color: var(--white); font-size: 22px; font-weight: 700; }
+.d-reviews{ color: var(--gray-m); font-size: 11px; font-weight: 400; }
+
+.d-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+
+.d-action-btn {
+  padding: 13px 20px; border-radius: 1px;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all .25s; border: none;
+  white-space: nowrap; letter-spacing: 1.2px; text-transform: uppercase;
+}
+
+.d-action-btn.primary {
+  background: var(--gold);
+  color: var(--navy);
+  box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+}
+
+.d-action-btn.primary:hover {
+  background: var(--gray-l);
+  box-shadow: 0 8px 24px rgba(212,175,55,0.4);
+}
+
+.d-action-btn.outline {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid rgba(212,175,55,0.4);
+}
+
+.d-action-btn.outline:hover {
+  background: rgba(212,175,55,0.08);
+  border-color: var(--gold);
+}
+
+.d-action-btn.saved {
+  background: rgba(212,175,55,0.15);
+  color: var(--gold);
+  border: 1px solid rgba(212,175,55,0.4);
+}
+
+/* タブ */
+.d-tabs-wrap {
+  background: var(--navy);
+  border-bottom: 1px solid rgba(212,175,55,0.2);
+  padding: 0 60px;
+  display: flex; gap: 0; overflow-x: auto;
+}
+
+.d-tab {
+  padding: 20px 28px;
+  color: var(--gray-m);
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all .25s;
+  background: none; border: none; font-family: inherit;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.d-tab:hover  { color: var(--gold); }
+.d-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.d-content { max-width: 1080px; margin: 0 auto; padding: 80px 60px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* Story */
+.story-section {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 32px; margin-bottom: 32px;
+}
+
+.story-block {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  padding: 32px;
+  border-radius: 1px;
+}
+
+.story-block h3 {
+  font-size: 10px; font-weight: 700; margin-bottom: 18px;
+  padding-bottom: 12px; border-bottom: 2px solid var(--gold);
+  color: var(--gold); letter-spacing: 2px; text-transform: uppercase;
+}
+
+.story-text { font-size: 13px; line-height: 2.1; color: rgba(255,255,255,0.75); font-weight: 300; }
+
+.story-text-full {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  padding: 36px;
+  margin-bottom: 32px;
+  border-radius: 1px;
+}
+
+.story-text-full h3 {
+  font-size: 10px; font-weight: 700; margin-bottom: 20px;
+  color: var(--gold); letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* Video */
+.video-wrap {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  padding: 36px;
+  border-radius: 1px;
+}
+
+.video-wrap h3 {
+  font-size: 10px; font-weight: 700; margin-bottom: 22px;
+  color: var(--gold); text-transform: uppercase; letter-spacing: 2px;
+}
+
+.video-placeholder {
+  background: repeating-linear-gradient(45deg, #0a0a0a, #0a0a0a 20px, #111 20px, #111 40px);
+  border-radius: 1px; height: 440px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--gray-m); gap: 16px;
+}
+
+.video-placeholder .play-icon { font-size: 64px; color: var(--gold); opacity: 0.4; }
+.video-placeholder p { font-size: 12px; font-weight: 300; }
+
+/* Craftsmen */
+.craftsmen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+.craftsman-card {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  padding: 32px;
+  text-align: center;
+  border-radius: 1px;
+  transition: all .25s;
+}
+
+.craftsman-card:hover { border-color: var(--gold); }
+
+.craftsman-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin: 0 auto 18px; color: white;
+}
+
+.craftsman-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--white); }
+.craftsman-role { font-size: 9px; color: var(--gold); font-weight: 700; margin-bottom: 14px; letter-spacing: 1.5px; text-transform: uppercase; }
+.craftsman-bio  { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.85; font-weight: 300; }
+
+/* Catalog */
+.catalog-list {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.2);
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.catalog-item {
+  display: flex; align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+  gap: 18px;
+  transition: background .2s;
+}
+
+.catalog-item:last-child { border-bottom: none; }
+.catalog-item:hover { background: rgba(212,175,55,0.05); }
+
+.catalog-color { width: 5px; height: 60px; border-radius: 1px; flex-shrink: 0; }
+.catalog-info { flex: 1; }
+
+.catalog-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--white); }
+.catalog-meta { font-size: 10px; color: var(--gray-m); font-weight: 400; letter-spacing: 0.5px; }
+.catalog-price { font-size: 18px; font-weight: 700; color: var(--gold); white-space: nowrap; }
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75); z-index: 500;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--navy);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 1px;
+  padding: 48px; width: 100%; max-width: 520px;
+  margin: 24px; position: relative;
+  animation: slideUp .35s ease;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.65);
+}
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: none; } }
+
+.modal-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: var(--white); letter-spacing: 0.5px; }
+.modal-sub   { font-size: 12px; color: var(--gold); font-weight: 700; margin-bottom: 28px; letter-spacing: 1px; }
+
+.modal-close {
+  position: absolute; top: 20px; right: 20px;
+  background: transparent; border: none;
+  font-size: 18px; cursor: pointer; color: var(--gray-m);
+  line-height: 1; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s;
+}
+
+.modal-close:hover { color: var(--gold); }
+
+.fld { margin-bottom: 20px; }
+
+.fld label {
+  display: block; font-size: 9px; font-weight: 700;
+  color: var(--gold); margin-bottom: 8px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.fld input, .fld textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 1px; font-size: 13px;
+  font-family: inherit; color: var(--white);
+  background: rgba(255,255,255,0.02);
+  transition: border-color .25s; font-weight: 400;
+}
+
+.fld input::placeholder, .fld textarea::placeholder { color: var(--gray-m); }
+
+.fld input:focus, .fld textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(212,175,55,0.06);
+}
+
+.fld textarea { resize: vertical; min-height: 110px; }
+
+.fld-err { color: #ff6b6b; font-size: 11px; margin-top: 6px; display: none; font-weight: 400; }
+.fld-err.show { display: block; }
+
+.btn-submit {
+  width: 100%; padding: 16px;
+  background: var(--gold); color: var(--navy);
+  border: none; border-radius: 1px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  margin-top: 12px; transition: all .25s;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(212,175,55,0.3);
+}
+
+.btn-submit:hover {
+  background: var(--gray-l);
+  box-shadow: 0 8px 32px rgba(212,175,55,0.4);
+  transform: translateY(-1px);
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 36px; right: 36px;
+  background: var(--navy); color: var(--white);
+  padding: 16px 28px; border-radius: 1px; font-size: 12px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.65);
+  opacity: 0; transform: translateY(80px);
+  transition: all .35s ease; z-index: 9999; pointer-events: none;
+  border-left: 4px solid var(--gold);
+  max-width: 360px; line-height: 1.7;
+  letter-spacing: 0.4px;
+  font-weight: 400;
+}
+
+#toast.show { opacity: 1; transform: none; }
+
+/* ══════════════════════════════════════════
+   MOBILE
+══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; position: static; padding: 40px; border-right: none; border-bottom: 1px solid rgba(212,175,55,0.2); height: auto; }
+  .products-col { padding: 40px 28px; }
+  .hero { min-height: auto; }
+  .hero-inner { padding: 60px 28px; }
+  .hero h1 { font-size: 42px; }
+  .grid { grid-template-columns: 1fr; gap: 24px; }
+  .prod-header h2 { font-size: 24px; }
+  .d-hero { min-height: 340px; }
+  .d-hero-inner { padding: 28px 28px; }
+  .d-hero-name { font-size: 28px; }
+  .d-actions { flex-direction: column; width: 100%; }
+  .d-action-btn { width: 100%; }
+  .story-section { grid-template-columns: 1fr; }
+  .d-tabs-wrap { padding: 0 28px; }
+  .d-content { padding: 40px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ ナビ ═══ -->
+<nav class="nav">
+  <div class="nav-logo" onclick="showView('top')">SpiritsBridge</div>
+  <div class="nav-right">
+    <span class="nav-tag">Bartender Platform</span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     TOP VIEW
+═══════════════════════════════════════ -->
+<div class="view active" id="view-top">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <h1>日本の<span class="accent">クラフト蒸留所</span>と<br>バーテンダーを繋ぐ</h1>
+      <p class="hero-sub">全国の小規模蒸留所が醸す「埋もれた名品」を、<br>蒸留家の思いと共にあなたのバーへ届ける</p>
+    </div>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">フィルター</div>
+
+      <!-- 検索 -->
+      <div class="sb-section">
+        <div class="sb-label">🔍 フリー検索</div>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="商品・蒸留所名" oninput="applyFilters()">
+          <button onclick="applyFilters()">→</button>
+        </div>
+      </div>
+
+      <!-- カテゴリー -->
+      <div class="sb-section">
+        <div class="sb-label">カテゴリー</div>
+        <div class="filter-pills">
+          <button class="fp active" data-cat="all" onclick="setCat('all',this)">すべて<span class="fp-count" id="cnt-all"></span></button>
+          <button class="fp" data-cat="whisky" onclick="setCat('whisky',this)">ウイスキー<span class="fp-count" id="cnt-whisky"></span></button>
+          <button class="fp" data-cat="gin" onclick="setCat('gin',this)">ジン<span class="fp-count" id="cnt-gin"></span></button>
+          <button class="fp" data-cat="rum" onclick="setCat('rum',this)">ラム<span class="fp-count" id="cnt-rum"></span></button>
+          <button class="fp" data-cat="tequila" onclick="setCat('tequila',this)">テキーラ<span class="fp-count" id="cnt-tequila"></span></button>
+          <button class="fp" data-cat="trial" onclick="setCat('trial',this)">試験醸造<span class="fp-count" id="cnt-trial"></span></button>
+        </div>
+      </div>
+
+      <!-- 価格帯 -->
+      <div class="sb-section">
+        <div class="sb-label">価格帯（卸価格）</div>
+        <input type="range" class="price-slider" id="price-slider" min="0" max="20000" step="500" value="20000" oninput="onPriceSlider(this)">
+        <div class="price-label" id="price-label">上限なし</div>
+      </div>
+
+      <!-- 地域 -->
+      <div class="sb-section">
+        <div class="sb-label">産地・地域</div>
+        <div class="region-list" id="region-list"></div>
+      </div>
+
+      <!-- リセット -->
+      <div class="sb-section">
+        <button class="btn-reset" onclick="resetFilters()">リセット</button>
+      </div>
+    </aside>
+
+    <!-- Product Grid -->
+    <div class="products-col">
+      <div class="prod-header">
+        <h2>掲載商品</h2>
+        <span class="prod-count-badge" id="prod-count">0件</span>
+      </div>
+      <div class="grid" id="product-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DISTILLERY DETAIL VIEW
+═══════════════════════════════════════ -->
+<div class="view" id="view-distillery">
+
+  <!-- Hero -->
+  <div class="d-hero" id="d-hero">
+    <div class="d-hero-bg" id="d-hero-bg"></div>
+    <div class="d-hero-inner">
+      <button class="d-back" onclick="showView('top')">← 戻る</button>
+      <div class="d-hero-meta">
+        <div class="d-hero-info">
+          <div class="d-hero-badge" id="d-badge">認証済み蒸留所</div>
+          <div class="d-hero-name" id="d-name"></div>
+          <div class="d-hero-region" id="d-region"></div>
+          <div class="d-hero-rep" id="d-rep"></div>
+          <div class="d-rating">
+            <div class="d-stars" id="d-stars">★★★★★</div>
+            <div class="d-score" id="d-score"></div>
+            <div class="d-reviews" id="d-reviews"></div>
+          </div>
+        </div>
+        <div class="d-actions">
+          <button class="d-action-btn primary" onclick="openModal('','')">💬 メッセージを送る</button>
+          <button class="d-action-btn outline" id="btn-save" onclick="toggleSave()">🔖 リストに追加</button>
+          <button class="d-action-btn outline" onclick="connectDistillery()">🤝 つながる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="d-tabs-wrap">
+    <button class="d-tab active" data-tab="story" onclick="switchTab('story',this)">物語</button>
+    <button class="d-tab" data-tab="video" onclick="switchTab('video',this)">インタビュー動画</button>
+    <button class="d-tab" data-tab="craftsmen" onclick="switchTab('craftsmen',this)">職人紹介</button>
+    <button class="d-tab" data-tab="catalog" onclick="switchTab('catalog',this)">商品カタログ</button>
+  </div>
+
+  <!-- Tab content -->
+  <div class="d-content">
+    <div class="tab-pane active" id="tab-story">
+      <div class="story-text-full">
+        <h3>蒸留所の物語</h3>
+        <p class="story-text" id="d-story"></p>
+      </div>
+      <div class="story-section">
+        <div class="story-block">
+          <h3>製法のこだわり</h3>
+          <p class="story-text" id="d-method"></p>
+        </div>
+        <div class="story-block">
+          <h3>蒸留家からのメッセージ</h3>
+          <p class="story-text" id="d-message"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-video">
+      <div class="video-wrap">
+        <h3>代表者インタビュー動画</h3>
+        <div id="d-video-content"></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-craftsmen">
+      <div class="craftsmen-grid" id="d-craftsmen"></div>
+    </div>
+
+    <div class="tab-pane" id="tab-catalog">
+      <div class="catalog-list" id="d-catalog"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ モーダル ═══ -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">💬 仕入れ相談</div>
+    <div class="modal-sub" id="modal-prod"></div>
+    <div class="fld">
+      <label>お名前（バーテンダー名）*</label>
+      <input type="text" id="f-name" placeholder="山田 太郎">
+    </div>
+    <div class="fld">
+      <label>店舗名 *</label>
+      <input type="text" id="f-shop" placeholder="Bar Example Tokyo">
+    </div>
+    <div class="fld">
+      <label>メッセージ *</label>
+      <textarea id="f-msg" placeholder="ご希望の数量や質問などをご記入ください"></textarea>
+    </div>
+    <div class="fld-err" id="f-err">すべての項目を入力してください</div>
+    <button class="btn-submit" onclick="submitInquiry()">送信する</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var DIST = [
+  {
+    id: 'yoichi',
+    name: '余市蒸溜所',
+    region: '北海道余市郡',
+    rep: '代表蒸留家: 田中 一郎',
+    rating: 4.9, reviews: 128,
+    heroColor: 'linear-gradient(160deg, #0d2b1a 0%, #082010 40%, #0B1F3A 100%)',
+    story: '1934年、北海道余市の地に創業した余市蒸溜所は、スコットランドの伝統製法を日本で最初に取り入れたパイオニアです。石炭直火蒸留という独自の手法で生み出されるウイスキーは、重厚な飲み口と豊かなピートの香りが特徴。90年にわたり受け継がれてきた職人の技が、一本一本に息づいています。北海道の厳しい寒暖差と清澄な空気が、熟成に深みを与え、国際コンペティションでも数多くの最高賞を受賞してきました。',
+    method: '石炭直火蒸留というスコットランドでもほぼ廃れた製法を今なお守り続けています。直火ならではの力強い蒸留で、ウイスキーの骨格となるコク深い原酒が生まれます。発酵は木桶を使用し、乳酸菌による独特のフルーティさを引き出しています。',
+    message: '「私たちのウイスキーは、北海道の大地が育てたものです。バーテンダーの皆さんに直接届け、その思いをお客様に伝えていただけることが最大の喜びです。」 — 代表 田中 一郎',
+    videoUrl: '',
+    products: [
+      { id:'p1', name:'余市シングルモルト 10年', cat:'whisky', abv:43.0, vol:700, price:9800, trial:false, desc:'10年以上熟成した原酒のみをヴァッティング。ピートの香りと柑橘系アロマが絶妙に調和。' },
+      { id:'p2', name:'余市モルト NAS',           cat:'whisky', abv:45.0, vol:700, price:6500, trial:false, desc:'ノン・エイジながら余市らしいスモーキーさとフルーティな余韻が楽しめる定番品。' },
+      { id:'p3', name:'余市ピーテッド 試験醸造',   cat:'whisky', abv:57.0, vol:500, price:14000,trial:true,  desc:'フェノール値50ppmの重めのピートを使用。200本限定の蒸留家渾身の実験作。' }
+    ],
+    craftsmen: [
+      { name:'田中 一郎', role:'代表蒸留家', bio:'スコットランドで5年修行後、帰国。石炭直火蒸留の継承者として90年の伝統を守る。', color:'#D4AF37' },
+      { name:'山本 次郎', role:'チーフブレンダー', bio:'20年のブレンド経験を持つ職人。仕込み水の選定から熟成管理まで担う。', color:'#C8860B' },
+      { name:'佐々木 美香', role:'発酵管理責任者', bio:'木桶発酵の専門家。乳酸菌の管理により余市特有の風味を生み出す。', color:'#A67C52' }
+    ]
+  },
+  {
+    id: 'kyoto',
+    name: '京都ボタニカルズ蒸留所',
+    region: '京都府京都市',
+    rep: '代表: 中村 雅子',
+    rating: 4.8, reviews: 87,
+    heroColor: 'linear-gradient(160deg, #2a0d3a 0%, #3d1040 40%, #1a0f30 100%)',
+    story: '2019年、伏見の地に開業した新進気鋭のクラフト蒸留所。フランスで醸造学を学んだ中村代表が、山椒・緑茶・桜など京都近郊で採取した和のボタニカルを用いた唯一無二のジンを少量生産しています。使用するボタニカルはすべて自社で採取・管理し、季節ごとの風味変化も楽しめます。',
+    method: '少量生産にこだわり、銅製ポットスチルを使用した伝統的な製法で蒸留。ボタニカルは四季の素材を活かし、山椒・宇治茶・桜の花など京都の自然から厳選。仕込み水は伏見の名水を使用しています。',
+    message: '「京都の四季が育てたボタニカルで作るジンは、一期一会の味わいです。バーテンダーの皆さんの感性と掛け合わさることで、新しい日本の文化が生まれると信じています。」 — 代表 中村 雅子',
+    videoUrl: '',
+    products: [
+      { id:'p4', name:'京都ドライジン 山椒',  cat:'gin', abv:47.0, vol:700, price:7200, trial:false, desc:'京都産山椒をメインボタニカルに。ジュニパーとの調和が絶妙なジントニックに最適な一本。' },
+      { id:'p5', name:'京都ジン 宇治抹茶',    cat:'gin', abv:43.0, vol:500, price:8500, trial:false, desc:'老舗茶農家と共同開発した抹茶ジン。緑茶の旨味とジンの香りが融合した唯一無二の味わい。' },
+      { id:'p6', name:'京都ジン 桜 春限定',   cat:'gin', abv:40.0, vol:500, price:9800, trial:true,  desc:'嵐山の桜花びら使用。毎年春のみ製造される限定エディション。フローラルで華やかな余韻。' }
+    ],
+    craftsmen: [
+      { name:'中村 雅子', role:'代表蒸留家', bio:'フランス・ボルドー大学で醸造学を修め帰国。和のボタニカルと西洋蒸留技術の融合を追求。', color:'#D4AF37' },
+      { name:'井上 拓海', role:'ボタニカル採取責任者', bio:'植物学の知識を活かし、京都近郊のボタニカルを四季ごとに採取・管理する専門家。', color:'#3D8B40' }
+    ]
+  },
+  {
+    id: 'okinawa',
+    name: '沖縄スピリッツ',
+    region: '沖縄県那覇市',
+    rep: '代表: 比嘉 守',
+    rating: 4.7, reviews: 64,
+    heroColor: 'linear-gradient(160deg, #0a1e30 0%, #0c3040 40%, #061520 100%)',
+    story: '2021年に沖縄本島で創業。泡盛造りの伝統を受け継ぎながら、沖縄産サトウキビ100%のクラフトラムに挑戦しています。珊瑚礁に濾過された清澄な地下水と亜熱帯の太陽が育てたサトウキビが生み出す、南国らしい明るい香りが特徴です。',
+    method: '沖縄全島から厳選したサトウキビを収穫直後に搾汁し、鮮度を保ったまま発酵。泡盛から受け継いだ黒麹菌を発酵補助に使用し、独自の風味を引き出しています。熟成はバーボン樽とシェリー樽を使い分けています。',
+    message: '「沖縄の太陽と海が育てたサトウキビを、一滴一滴大切に蒸留しています。バーテンダーの皆さんがカクテルで使うたびに、沖縄の青空を感じていただければ幸いです。」 — 代表 比嘉 守',
+    videoUrl: '',
+    products: [
+      { id:'p7', name:'沖縄ホワイトラム',         cat:'rum', abv:40.0, vol:700, price:4800, trial:false, desc:'フレッシュジュース発酵の軽やかなホワイトラム。フルーティでカクテルベースに最適。' },
+      { id:'p8', name:'沖縄ダークラム 樽熟成3年', cat:'rum', abv:43.0, vol:700, price:7800, trial:false, desc:'バーボン樽で3年熟成。バナナとバニラの香りに深い樽の余韻。' },
+      { id:'p9', name:'沖縄アグリコール 試験醸造', cat:'rum', abv:55.0, vol:500, price:11000,trial:true,  desc:'収穫直後のサトウキビジュースのみ使用。鮮烈な草の香りと力強い余韻。' }
+    ],
+    craftsmen: [
+      { name:'比嘉 守', role:'代表蒸留家', bio:'泡盛蔵元4代目。伝統の黒麹製法を守りながら、カリブのラム技法を融合した新境地を開拓。', color:'#0F5C7A' },
+      { name:'新垣 彩', role:'発酵管理', bio:'農業大学でサトウキビ研究を専攻。厳選したサトウキビの糖度管理と発酵コントロールを担う。', color:'#D4AF37' }
+    ]
+  },
+  {
+    id: 'hokkaido',
+    name: '北海道クラフト蒸留所',
+    region: '北海道富良野市',
+    rep: '代表: 佐藤 健一',
+    rating: 4.8, reviews: 95,
+    heroColor: 'linear-gradient(160deg, #0d1e3a 0%, #152a50 40%, #0a1830 100%)',
+    story: '富良野のラベンダー畑に囲まれた蒸留所。2018年創業で、北海道産ハーブを使った独自スタイルのジンとウイスキーを手がけています。北海道の大自然が育む素材を最大限に活かすため、すべての工程を少量ずつ丁寧に仕上げています。',
+    method: '富良野産のラベンダーやハーブを自社畑で栽培し、収穫後すぐに使用。ウイスキーは北海道産大麦麦芽のみを使用し、小型ポットスチルで丁寧に蒸留。低温熟成により、寒冷地ならではのクリアな仕上がりを実現しています。',
+    message: '「富良野の紫の風景をボトルに閉じ込めたい。その一心で蒸留を続けています。バーテンダーの皆さんがこの北の大地の香りをお客様に届けてくださることを夢見ています。」 — 代表 佐藤 健一',
+    videoUrl: '',
+    products: [
+      { id:'p10', name:'富良野ラベンダージン',       cat:'gin',     abv:44.0, vol:700, price:6800, trial:false, desc:'富良野産ラベンダーをメインボタニカルに使用。フローラルで華やかなアロマ。' },
+      { id:'p11', name:'北海道モルト シングルカスク', cat:'whisky',  abv:58.0, vol:700, price:18000,trial:false, desc:'単一樽のみ使用したシングルカスク。北海道の寒暖差が生む独特の熟成感。' },
+      { id:'p12', name:'北海道テキーラ 試験醸造',    cat:'tequila', abv:42.0, vol:500, price:9500, trial:true,  desc:'北海道育ちのアガベを使った実験的テキーラ。寒冷地栽培による独特のミネラル感。' }
+    ],
+    craftsmen: [
+      { name:'佐藤 健一', role:'代表蒸留家', bio:'メキシコでテキーラ製造を学び帰国。北海道の気候を活かした独自製法を研究中。', color:'#D4AF37' },
+      { name:'田村 咲希', role:'農場管理責任者', bio:'ラベンダー農場を管理しながら、蒸留用ボタニカルの品質管理を担う。', color:'#5C3580' }
+    ]
+  }
+];
+
+var currentCat    = 'all';
+var currentMaxPr  = 20000;
+var currentDistId = null;
+var modalProdName = '';
+var savedDist     = {};
+
+(function init() {
+  var regions = {};
+  for (var i = 0; i < DIST.length; i++) {
+    var r = DIST[i].region;
+    var pref = r.split('府').join('県').split('県')[0] + (r.indexOf('府') >= 0 ? '府' : '県');
+    regions[pref] = true;
+  }
+  var regionHtml = '';
+  var keys = Object.keys(regions);
+  for (var i = 0; i < keys.length; i++) {
+    regionHtml += '<label class="region-item"><input type="checkbox" checked onchange="applyFilters()" data-region="' + keys[i] + '"> ' + keys[i] + '</label>';
+  }
+  document.getElementById('region-list').innerHTML = regionHtml;
+  updateCounts();
+  applyFilters();
+})();
+
+function showView(name) {
+  document.getElementById('view-top').className        = 'view';
+  document.getElementById('view-distillery').className = 'view';
+  document.getElementById('view-' + name).className    = 'view active';
+  window.scrollTo(0, 0);
+}
+
+function setCat(cat, btn) {
+  currentCat = cat;
+  var btns = document.querySelectorAll('.fp');
+  for (var i = 0; i < btns.length; i++) btns[i].className = 'fp';
+  btn.className = 'fp active';
+  applyFilters();
+}
+
+function onPriceSlider(el) {
+  currentMaxPr = parseInt(el.value);
+  var lbl = document.getElementById('price-label');
+  lbl.textContent = currentMaxPr >= 20000 ? '上限なし' : '¥' + currentMaxPr.toLocaleString() + ' まで';
+  applyFilters();
+}
+
+function getCheckedRegions() {
+  var result = {};
+  var cbs = document.querySelectorAll('#region-list input[type=checkbox]');
+  for (var i = 0; i < cbs.length; i++) {
+    if (cbs[i].checked) result[cbs[i].dataset.region] = true;
+  }
+  return result;
+}
+
+function resetFilters() {
+  currentCat   = 'all';
+  currentMaxPr = 20000;
+  document.getElementById('search-input').value = '';
+  document.getElementById('price-slider').value = 20000;
+  document.getElementById('price-label').textContent = '上限なし';
+  var cbs = document.querySelectorAll('#region-list input[type=checkbox]');
+  for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+  var btns = document.querySelectorAll('.fp');
+  for (var i = 0; i < btns.length; i++) btns[i].className = 'fp';
+  document.querySelector('.fp[data-cat="all"]').className = 'fp active';
+  applyFilters();
+}
+
+function applyFilters() {
+  var q = document.getElementById('search-input').value.trim().toLowerCase();
+  var checkedRegions = getCheckedRegions();
+  var grid = document.getElementById('product-grid');
+  var html = '';
+  var count = 0;
+
+  var tagLabel  = { whisky:'ウイスキー', gin:'ジン', rum:'ラム', tequila:'テキーラ', other:'その他' };
+
+  for (var di = 0; di < DIST.length; di++) {
+    var d = DIST[di];
+    var r = d.region;
+    var pref = r.split('府').join('県').split('県')[0] + (r.indexOf('府') >= 0 ? '府' : '県');
+    if (!checkedRegions[pref]) continue;
+
+    for (var pi = 0; pi < d.products.length; pi++) {
+      var p = d.products[pi];
+      if (currentCat === 'trial' && !p.trial) continue;
+      if (currentCat !== 'all' && currentCat !== 'trial' && p.cat !== currentCat) continue;
+      if (p.price > currentMaxPr) continue;
+      if (q && p.name.toLowerCase().indexOf(q) < 0 && d.name.toLowerCase().indexOf(q) < 0) continue;
+
+      count++;
+
+      html += '<div class="card">';
+      html +=   '<div class="card-body">';
+      html +=     '<div class="card-distillery-name" onclick="showDistillery(\'' + d.id + '\')">' + d.name + '</div>';
+      html +=     '<div class="card-name">' + p.name + '</div>';
+      html +=     '<div class="card-tags">';
+      html +=       '<span class="tag">' + (tagLabel[p.cat] || p.cat) + '</span>';
+      if (p.trial) html += '<span class="tag">試験醸造</span>';
+      html +=     '</div>';
+      html +=     '<div class="card-specs">ABV ' + p.abv + '% · ' + p.vol + 'ml</div>';
+      html +=     '<div class="card-desc">' + p.desc + '</div>';
+      html +=     '<div class="card-price">¥' + p.price.toLocaleString() + '</div>';
+      html +=     '<div class="card-price-label">卸価格</div>';
+      html +=   '</div>';
+      html +=   '<div class="card-actions">';
+      html +=     '<button class="btn-inquiry" onclick="openModal(\'' + p.id + '\',\'' + d.id + '\')">💬 仕入れを相談する</button>';
+      html +=     '<button class="btn-story" onclick="showDistillery(\'' + d.id + '\')">🏭 蒸留所を見る</button>';
+      html +=   '</div>';
+      html += '</div>';
+    }
+  }
+
+  grid.innerHTML = count
+    ? html
+    : '<div class="empty">条件に合う商品が見つかりません</div>';
+  document.getElementById('prod-count').textContent = count + '件';
+}
+
+function updateCounts() {
+  var counts = { all:0, whisky:0, gin:0, rum:0, tequila:0, trial:0 };
+  for (var di = 0; di < DIST.length; di++) {
+    for (var pi = 0; pi < DIST[di].products.length; pi++) {
+      var p = DIST[di].products[pi];
+      counts.all++;
+      if (counts[p.cat] !== undefined) counts[p.cat]++;
+      if (p.trial) counts.trial++;
+    }
+  }
+  var keys = Object.keys(counts);
+  for (var i = 0; i < keys.length; i++) {
+    var el = document.getElementById('cnt-' + keys[i]);
+    if (el) el.textContent = counts[keys[i]];
+  }
+}
+
+function showDistillery(id) {
+  var d = null;
+  for (var i = 0; i < DIST.length; i++) { if (DIST[i].id === id) { d = DIST[i]; break; } }
+  if (!d) return;
+  currentDistId = id;
+
+  document.getElementById('d-hero-bg').style.background = d.heroColor;
+  document.getElementById('d-name').textContent    = d.name;
+  document.getElementById('d-region').textContent  = d.region;
+  document.getElementById('d-rep').textContent     = d.rep;
+  document.getElementById('d-score').textContent   = d.rating;
+  document.getElementById('d-reviews').textContent = '(' + d.reviews + '件)';
+
+  var full = Math.floor(d.rating);
+  var stars = '';
+  for (var i = 0; i < full; i++) stars += '★';
+  if (d.rating % 1 >= 0.5) stars += '☆';
+  document.getElementById('d-stars').textContent = stars;
+
+  document.getElementById('d-story').textContent   = d.story;
+  document.getElementById('d-method').textContent  = d.method;
+  document.getElementById('d-message').textContent = d.message;
+
+  var ytMatch = d.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{11})/);
+  var videoEl = document.getElementById('d-video-content');
+  if (ytMatch) {
+    videoEl.innerHTML = '<iframe width="100%" height="440" src="https://www.youtube.com/embed/' + ytMatch[1] + '" frameborder="0" allowfullscreen style="border-radius:1px;display:block"></iframe>';
+  } else {
+    videoEl.innerHTML = '<div class="video-placeholder"><div class="play-icon">▶</div><p>' + d.name + ' 代表者インタビュー</p><p style="font-size:11px;margin-top:6px">動画は近日公開予定です</p></div>';
+  }
+
+  var cHtml = '';
+  for (var i = 0; i < d.craftsmen.length; i++) {
+    var c = d.craftsmen[i];
+    cHtml += '<div class="craftsman-card">';
+    cHtml +=   '<div class="craftsman-avatar" style="background:' + c.color + '">' + c.name.charAt(0) + '</div>';
+    cHtml +=   '<div class="craftsman-name">' + c.name + '</div>';
+    cHtml +=   '<div class="craftsman-role">' + c.role + '</div>';
+    cHtml +=   '<div class="craftsman-bio">' + c.bio + '</div>';
+    cHtml += '</div>';
+  }
+  document.getElementById('d-craftsmen').innerHTML = cHtml;
+
+  var tagLabel = { whisky:'ウイスキー', gin:'ジン', rum:'ラム', tequila:'テキーラ', other:'その他' };
+  var catColor = { whisky:'#C8860B', gin:'#3D8B40', rum:'#C41E3A', tequila:'#7B3FF2', other:'#0F5C7A' };
+  var catalogHtml = '';
+  for (var i = 0; i < d.products.length; i++) {
+    var p = d.products[i];
+    catalogHtml += '<div class="catalog-item">';
+    catalogHtml +=   '<div class="catalog-color" style="background:' + (catColor[p.cat] || '#555') + '"></div>';
+    catalogHtml +=   '<div class="catalog-info">';
+    catalogHtml +=     '<div class="catalog-name">' + p.name + (p.trial ? ' <span class="tag" style="font-size:8px;padding:1px 5px">限定</span>' : '') + '</div>';
+    catalogHtml +=     '<div class="catalog-meta">' + (tagLabel[p.cat] || p.cat) + '  ·  ABV ' + p.abv + '%  ·  ' + p.vol + 'ml</div>';
+    catalogHtml +=   '</div>';
+    catalogHtml +=   '<div class="catalog-price">¥' + p.price.toLocaleString() + '</div>';
+    catalogHtml +=   '<button class="btn-inquiry" style="width:auto;padding:9px 12px;font-size:10px;margin-left:12px" onclick="openModal(\'' + p.id + '\',\'' + d.id + '\')">相談</button>';
+    catalogHtml += '</div>';
+  }
+  document.getElementById('d-catalog').innerHTML = catalogHtml;
+
+  document.getElementById('btn-save').className   = savedDist[id] ? 'd-action-btn saved' : 'd-action-btn outline';
+  document.getElementById('btn-save').textContent = savedDist[id] ? '✅ リスト済み' : '🔖 リストに追加';
+
+  switchTab('story', document.querySelector('.d-tab[data-tab="story"]'));
+  showView('distillery');
+}
+
+function switchTab(name, btn) {
+  var panes = document.querySelectorAll('.tab-pane');
+  for (var i = 0; i < panes.length; i++) panes[i].className = 'tab-pane';
+  document.getElementById('tab-' + name).className = 'tab-pane active';
+  var tabs = document.querySelectorAll('.d-tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].className = 'd-tab';
+  btn.className = 'd-tab active';
+}
+
+function toggleSave() {
+  if (!currentDistId) return;
+  savedDist[currentDistId] = !savedDist[currentDistId];
+  var btn = document.getElementById('btn-save');
+  if (savedDist[currentDistId]) {
+    btn.className = 'd-action-btn saved';
+    btn.textContent = '✅ リスト済み';
+    showToast('リストに追加しました');
+  } else {
+    btn.className = 'd-action-btn outline';
+    btn.textContent = '🔖 リストに追加';
+    showToast('リストから削除しました');
+  }
+}
+
+function connectDistillery() {
+  if (!currentDistId) return;
+  var d = null;
+  for (var i = 0; i < DIST.length; i++) { if (DIST[i].id === currentDistId) { d = DIST[i]; break; } }
+  showToast(d ? d.name + ' とのつながりをリクエストしました' : 'リクエストを送信しました');
+}
+
+function openModal(prodId, distId) {
+  var label = '';
+  for (var di = 0; di < DIST.length; di++) {
+    if (DIST[di].id === distId) {
+      for (var pi = 0; pi < DIST[di].products.length; pi++) {
+        if (DIST[di].products[pi].id === prodId) {
+          label = DIST[di].products[pi].name + '（' + DIST[di].name + '）';
+          break;
+        }
+      }
+      if (!label) label = DIST[di].name;
+      break;
+    }
+  }
+  if (!label && currentDistId) {
+    for (var i = 0; i < DIST.length; i++) {
+      if (DIST[i].id === currentDistId) { label = DIST[i].name; break; }
+    }
+  }
+  modalProdName = label;
+  document.getElementById('modal-prod').textContent = label;
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-shop').value = '';
+  document.getElementById('f-msg').value  = '';
+  document.getElementById('f-err').className = 'fld-err';
+  document.getElementById('modal').className = 'modal-overlay open';
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').className = 'modal-overlay';
+  }
+}
+
+function submitInquiry() {
+  var name = document.getElementById('f-name').value.trim();
+  var shop = document.getElementById('f-shop').value.trim();
+  var msg  = document.getElementById('f-msg').value.trim();
+  if (!name || !shop || !msg) {
+    document.getElementById('f-err').className = 'fld-err show';
+    return;
+  }
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem('sb_inquiries') || '[]'); } catch(e) {}
+  saved.push({ id: Date.now(), product: modalProdName, bartender: name, shop: shop, message: msg, date: new Date().toLocaleDateString('ja-JP') });
+  localStorage.setItem('sb_inquiries', JSON.stringify(saved));
+  document.getElementById('modal').className = 'modal-overlay';
+  showToast('送信しました！蒸留所からご連絡いたします');
+}
+
+var _tt = null;
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show';
+  clearTimeout(_tt);
+  _tt = setTimeout(function() { el.className = ''; }, 3500);
+}
+
+document.onkeydown = function(e) {
+  if (e.key === 'Escape') document.getElementById('modal').className = 'modal-overlay';
+};
+</script>
+</body>
+</html>

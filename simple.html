@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpiritsBridge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: sans-serif; background: #FAF3E8; color: #1A1208; }
+
+    /* ── ナビ ── */
+    nav {
+      background: #1A1208; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 32px; height: 60px;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .logo { color: #F5C97A; font-size: 20px; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+    nav ul { list-style: none; display: flex; gap: 24px; }
+    nav ul li a { color: #ccc; text-decoration: none; font-size: 14px; }
+    nav ul li a:hover { color: #F5C97A; }
+
+    /* ── ビュー切り替え ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── ページ遷移アニメ ── */
+    .view.active { animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* ── トップページ ── */
+    .hero {
+      background: linear-gradient(135deg, #1A1208 0%, #2B1E0D 60%, #3D2A0E 100%);
+      min-height: 420px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 60px 24px;
+    }
+    .hero-badge {
+      background: #C97B2A; color: #fff; font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase; padding: 4px 14px; border-radius: 2px; margin-bottom: 20px;
+    }
+    .hero h1 { color: #fff; font-size: 40px; line-height: 1.3; margin-bottom: 16px; }
+    .hero h1 span { color: #F5C97A; }
+    .hero p { color: #c0b090; font-size: 16px; max-width: 520px; line-height: 1.8; margin-bottom: 28px; }
+    .hero-btn {
+      background: #C97B2A; color: #fff; border: none; padding: 13px 32px;
+      border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+    }
+
+    .about {
+      max-width: 860px; margin: 60px auto; padding: 0 24px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+    }
+    .card {
+      background: #fff; border-radius: 10px; padding: 28px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .card-icon { font-size: 36px; margin-bottom: 14px; }
+    .card h3 { font-size: 16px; margin-bottom: 8px; }
+    .card p { font-size: 13px; color: #6B6057; line-height: 1.7; }
+    .card-link { font-size: 12px; color: #C97B2A; font-weight: 700; margin-top: 10px; display: block; }
+
+    /* ── カテゴリーフィルター ── */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .filter-btn {
+      background: #fff; border: 1px solid #EDE3D5; color: #6B6057;
+      padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: #C97B2A; color: #C97B2A; }
+    .filter-btn.active { background: #C97B2A; border-color: #C97B2A; color: #fff; font-weight: 700; }
+
+    /* ── 商品グリッド ── */
+    .products { max-width: 1000px; margin: 0 auto 60px; padding: 0 24px; }
+    .products h2 { font-size: 22px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #EDE3D5; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .product-card {
+      background: #fff; border-radius: 8px; padding: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-top: 3px solid #C97B2A;
+      transition: transform .15s;
+    }
+    .product-card:hover { transform: translateY(-2px); }
+    .product-card.hidden { display: none; }
+    .product-category { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #C97B2A; font-weight: 700; margin-bottom: 8px; }
+    .product-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .product-distillery { font-size: 12px; color: #6B6057; margin-bottom: 12px; }
+    .product-price { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
+    .product-price span { font-size: 11px; color: #6B6057; font-weight: 400; }
+    .btn-row { display: flex; gap: 6px; }
+    .detail-btn {
+      flex: 1; background: #EDE3D5; color: #1A1208; border: none;
+      padding: 8px; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .detail-btn:hover { background: #d4c8b0; }
+    .inquiry-btn {
+      flex: 1; background: #1A1208; color: #F5C97A; border: none;
+      padding: 8px; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .inquiry-btn:hover { background: #C97B2A; color: #fff; }
+    .no-results { grid-column: 1/-1; text-align: center; padding: 40px; color: #6B6057; }
+
+    /* ── 蒸留所詳細ページ ── */
+    .back-bar {
+      background: #1A1208; padding: 12px 32px;
+    }
+    .back-btn {
+      background: none; border: 1px solid rgba(255,255,255,.25); color: rgba(255,255,255,.7);
+      padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer;
+    }
+    .back-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+    .d-hero {
+      background: linear-gradient(135deg, #0E2010 0%, #1B3D2F 50%, #0E1F3D 100%);
+      padding: 48px 32px; text-align: center;
+    }
+    .d-hero h1 { color: #fff; font-size: 32px; margin-bottom: 8px; }
+    .d-hero h1 span { color: #E8C97A; }
+    .d-hero p { color: rgba(255,255,255,.6); font-size: 14px; }
+    .d-badge {
+      display: inline-block; background: rgba(201,168,76,.2); border: 1px solid rgba(201,168,76,.4);
+      color: #E8C97A; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 3px 12px; border-radius: 2px; margin-bottom: 12px;
+    }
+
+    .d-body { max-width: 860px; margin: 0 auto; padding: 40px 24px; }
+    .d-story {
+      background: #fff; border-radius: 10px; padding: 28px; margin-bottom: 28px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07); border-left: 4px solid #C97B2A;
+    }
+    .d-story h2 { font-size: 16px; margin-bottom: 12px; color: #C97B2A; }
+    .d-story p { font-size: 14px; line-height: 1.9; color: #3A2E20; }
+
+    .d-products h2 { font-size: 20px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #EDE3D5; }
+    .d-product-list { display: flex; flex-direction: column; gap: 12px; }
+    .d-product-row {
+      background: #fff; border-radius: 8px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex;
+      align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .d-product-row:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .d-product-info { flex: 1; }
+    .d-product-info .cat { font-size: 10px; color: #C97B2A; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .d-product-info .name { font-size: 15px; font-weight: 700; margin: 4px 0; }
+    .d-product-info .story { font-size: 12px; color: #6B6057; line-height: 1.6; }
+    .d-product-right { text-align: right; flex-shrink: 0; }
+    .d-product-right .price { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .d-product-right .price span { font-size: 11px; color: #6B6057; font-weight: 400; }
+
+    /* ── 送信履歴 ── */
+    .history { max-width: 1000px; margin: 0 auto 60px; padding: 0 24px; display: none; }
+    .history h2 { font-size: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #EDE3D5; }
+    .history-list { display: flex; flex-direction: column; gap: 10px; }
+    .history-item { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); font-size: 13px; }
+    .history-item strong { color: #C97B2A; }
+    .history-item .date { color: #9B9088; font-size: 11px; margin-top: 4px; }
+
+    /* ── モーダル ── */
+    .overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 100; align-items: center; justify-content: center; padding: 16px;
+    }
+    .overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 460px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.25); }
+    .modal-head { background: #1A1208; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-head h3 { color: #F5C97A; font-size: 16px; }
+    .modal-head h3 small { display: block; color: rgba(255,255,255,.5); font-size: 11px; font-weight: 400; margin-top: 2px; }
+    .close-btn { background: none; border: none; color: rgba(255,255,255,.5); font-size: 20px; cursor: pointer; }
+    .modal-body { padding: 22px; }
+    .modal-body label { display: block; font-size: 11px; font-weight: 700; color: #6B6057; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+    .modal-body input, .modal-body textarea {
+      width: 100%; border: 1px solid #EDE3D5; border-radius: 6px;
+      padding: 9px 12px; font-size: 14px; margin-bottom: 14px; outline: none; font-family: inherit;
+    }
+    .modal-body input:focus, .modal-body textarea:focus { border-color: #C97B2A; }
+    .modal-body textarea { min-height: 100px; resize: vertical; }
+    .submit-btn { width: 100%; background: #C97B2A; color: #fff; border: none; padding: 12px; border-radius: 7px; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .submit-btn:hover { background: #9A5C18; }
+
+    /* ── トースト ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1A1208; color: #fff;
+      padding: 12px 20px; border-radius: 8px; font-size: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transform: translateY(80px); opacity: 0;
+      transition: transform .35s, opacity .35s; z-index: 200;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 600px) {
+      .about, .product-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+      .d-product-row { flex-direction: column; align-items: flex-start; }
+      .d-product-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ナビ（共通） -->
+<nav>
+  <div class="logo" onclick="showView('top')">🥃 SpiritsBridge</div>
+  <ul>
+    <li><a href="#" onclick="showView('top');return false;">トップ</a></li>
+    <li><a href="#" onclick="scrollToProducts();return false;">商品一覧</a></li>
+    <li><a href="#" onclick="showView('distillery');return false;">余市蒸留所</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════
+     VIEW 1: トップページ
+══════════════════════════════════ -->
+<div id="view-top" class="view active">
+
+  <section class="hero">
+    <div class="hero-badge">Distillery × Bartender</div>
+    <h1>地方の蒸留所と<br><span>バーテンダー</span>をつなぐ</h1>
+    <p>埋もれた逸品を、あなたのカウンターへ。<br>全国のクラフト蒸留所から直接仕入れ。</p>
+    <a href="#" class="hero-btn" onclick="scrollToProducts();return false;">商品を探す →</a>
+  </section>
+
+  <section class="about">
+    <div class="card" onclick="showView('distillery')">
+      <div class="card-icon">🏭</div>
+      <h3>247の蒸留所</h3>
+      <p>全国のクラフト蒸留所が登録。希少品・限定品に最速でアクセス。</p>
+      <span class="card-link">余市蒸留所を見る →</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <h3>直接取引</h3>
+      <p>中間業者なし。蒸留所の職人と直接つながり、物語ごと仕入れる。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔬</div>
+      <h3>試験醸造品</h3>
+      <p>未発売の試験醸造品をモニターとして先行取得できる。</p>
+    </div>
+  </section>
+
+  <section class="products" id="products">
+    <h2>🔥 注目の商品</h2>
+
+    <!-- カテゴリーフィルター -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">すべて</button>
+      <button class="filter-btn" onclick="filterProducts('whisky', this)">🥃 ウイスキー</button>
+      <button class="filter-btn" onclick="filterProducts('gin', this)">🍸 ジン</button>
+      <button class="filter-btn" onclick="filterProducts('rum', this)">🌿 ラム</button>
+      <button class="filter-btn" onclick="filterProducts('trial', this)">🔬 試験醸造</button>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+
+      <div class="product-card" data-cat="whisky">
+        <div class="product-category">🥃 クラフトウイスキー</div>
+        <div class="product-name">余市シングルモルト 10年</div>
+        <div class="product-distillery">余市クラフト蒸留所 · 北海道</div>
+        <div class="product-price">¥8,200 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('余市シングルモルト 10年','余市クラフト蒸留所')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="gin">
+        <div class="product-category">🍸 クラフトジン</div>
+        <div class="product-name">ユキノハナ ドライジン</div>
+        <div class="product-distillery">北海道クラフト蒸留所 · 北海道</div>
+        <div class="product-price">¥4,800 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('ユキノハナ ドライジン','北海道クラフト蒸留所')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="gin">
+        <div class="product-category">🌸 季節限定ジン</div>
+        <div class="product-name">SAKURA ジン 桜・抹茶</div>
+        <div class="product-distillery">京都ボタニカルズ · 京都</div>
+        <div class="product-price">¥5,200 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('SAKURA ジン 桜・抹茶','京都ボタニカルズ')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="rum">
+        <div class="product-category">🌿 クラフトラム</div>
+        <div class="product-name">OKINAWA ラム 3年熟成</div>
+        <div class="product-distillery">沖縄スピリッツ · 沖縄</div>
+        <div class="product-price">¥5,600 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('OKINAWA ラム 3年熟成','沖縄スピリッツ')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="trial">
+        <div class="product-category">🔬 試験醸造品</div>
+        <div class="product-name">昆布熟成ウォッカ #7</div>
+        <div class="product-distillery">余市クラフト蒸留所 · 北海道</div>
+        <div class="product-price">¥3,200 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('昆布熟成ウォッカ #7','余市クラフト蒸留所')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-cat="whisky">
+        <div class="product-category">🍂 カスクストレングス</div>
+        <div class="product-name">余市 CS 2019 限定120本</div>
+        <div class="product-distillery">余市クラフト蒸留所 · 北海道</div>
+        <div class="product-price">¥14,800 <span>/ 本</span></div>
+        <div class="btn-row">
+          <button class="detail-btn" onclick="showView('distillery')">蒸留所を見る</button>
+          <button class="inquiry-btn" onclick="openModal('余市 CS 2019 限定120本','余市クラフト蒸留所')">✉ 問い合わせ</button>
+        </div>
+      </div>
+
+      <div class="no-results" id="noResults" style="display:none;">
+        該当する商品が見つかりません
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 送信履歴 -->
+  <section class="history" id="history">
+    <h2>📨 送信済みメッセージ</h2>
+    <div class="history-list" id="historyList"></div>
+  </section>
+
+</div><!-- /view-top -->
+
+<!-- ══════════════════════════════════
+     VIEW 2: 蒸留所詳細ページ
+══════════════════════════════════ -->
+<div id="view-distillery" class="view">
+
+  <div class="back-bar">
+    <button class="back-btn" onclick="showView('top')">← 一覧に戻る</button>
+  </div>
+
+  <div class="d-hero">
+    <div class="d-badge">📍 北海道余市郡 · 1987年創業</div>
+    <h1><span>余市</span>クラフト蒸留所</h1>
+    <p>「大地の記憶を、一滴に宿す」</p>
+  </div>
+
+  <div class="d-body">
+
+    <div class="d-story">
+      <h2>🌾 蒸留所の物語</h2>
+      <p>北海道余市の冷涼な気候と羊蹄山系の伏流水——この土地にしかない自然の恵みを樽の中に閉じ込めることが私たちの使命です。1987年の創業以来、伝統的なポットスチル蒸留を守りながら、北海道産の大麦や昆布など地元素材を使った新しい試みに挑戦し続けています。バーテンダーの皆さんへ——私たちの酒は、あなたのカウンターで初めて完成します。</p>
+    </div>
+
+    <div class="d-products">
+      <h2>🍾 この蒸留所の商品</h2>
+      <div class="d-product-list">
+
+        <div class="d-product-row">
+          <div class="d-product-info">
+            <div class="cat">🥃 クラフトウイスキー</div>
+            <div class="name">余市シングルモルト 10年 700ml</div>
+            <div class="story">余市の海風と内陸の寒暖差が生む、ピートと果実の絶妙なバランス。バーボン樽×シェリー樽の10年熟成。</div>
+          </div>
+          <div class="d-product-right">
+            <div class="price">¥8,200 <span>/ 本</span></div>
+            <button class="inquiry-btn" style="width:100%;padding:8px 16px;" onclick="openModal('余市シングルモルト 10年','余市クラフト蒸留所')">✉ 問い合わせ</button>
+          </div>
+        </div>
+
+        <div class="d-product-row">
+          <div class="d-product-info">
+            <div class="cat">🥃 カスクストレングス</div>
+            <div class="name">余市 CS 2019 限定120本 700ml</div>
+            <div class="story">加水なし・冷却濾過なし。58.4%の力強さの中にプラムとダークチョコレート。本数限定・要予約。</div>
+          </div>
+          <div class="d-product-right">
+            <div class="price">¥14,800 <span>/ 本</span></div>
+            <button class="inquiry-btn" style="width:100%;padding:8px 16px;" onclick="openModal('余市 CS 2019 限定120本','余市クラフト蒸留所')">✉ 問い合わせ</button>
+          </div>
+        </div>
+
+        <div class="d-product-row">
+          <div class="d-product-info">
+            <div class="cat">🔬 試験醸造品 #7</div>
+            <div class="name">昆布熟成ウォッカ プロトタイプ 200ml</div>
+            <div class="story">羅臼昆布のうまみとウォッカのクリーンさが融合。全国20店舗限定テスト流通中。フィードバック歓迎。</div>
+          </div>
+          <div class="d-product-right">
+            <div class="price">¥3,200 <span>/ 本</span></div>
+            <button class="inquiry-btn" style="width:100%;padding:8px 16px;" onclick="openModal('昆布熟成ウォッカ #7','余市クラフト蒸留所')">✉ 申し込む</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div><!-- /view-distillery -->
+
+<!-- モーダル -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">仕入れ問い合わせ<small id="modalSub"></small></h3>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>お名前 / バー名</label>
+      <input type="text" id="inputName" placeholder="例：Bar NORTH 田中">
+      <label>メッセージ</label>
+      <textarea id="inputMsg" placeholder="仕入れ数量、希望納期、質問など自由にどうぞ"></textarea>
+      <button class="submit-btn" onclick="submitForm()">送信する →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  var currentProduct = '', currentDistillery = '';
+
+  /* ── ビュー切り替え ── */
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+    document.getElementById('view-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+    history.pushState({ view: id }, '', '#' + id);
+  }
+
+  window.addEventListener('popstate', function(e) {
+    var id = (e.state && e.state.view) || 'top';
+    document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+    document.getElementById('view-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+  });
+
+  function scrollToProducts() {
+    showView('top');
+    setTimeout(function() {
+      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  }
+
+  /* ── カテゴリーフィルター ── */
+  function filterProducts(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var cards = document.querySelectorAll('.product-card');
+    var visible = 0;
+    cards.forEach(function(card) {
+      var match = cat === 'all' || card.dataset.cat === cat;
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  /* ── モーダル ── */
+  function openModal(product, distillery) {
+    currentProduct = product;
+    currentDistillery = distillery;
+    document.getElementById('modalTitle').childNodes[0].nodeValue = '仕入れ問い合わせ';
+    document.getElementById('modalSub').textContent = distillery + ' — ' + product;
+    document.getElementById('inputName').value = '';
+    document.getElementById('inputMsg').value = '';
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('overlay') || e.currentTarget.className === 'close-btn') {
+      document.getElementById('overlay').classList.remove('open');
+    }
+  }
+
+  /* ── 送信・localStorage ── */
+  function submitForm() {
+    var name = document.getElementById('inputName').value.trim();
+    var msg  = document.getElementById('inputMsg').value.trim();
+    if (!name) { document.getElementById('inputName').focus(); return; }
+    if (!msg)  { document.getElementById('inputMsg').focus(); return; }
+
+    var list = JSON.parse(localStorage.getItem('sb_inquiries') || '[]');
+    list.unshift({ name: name, msg: msg, product: currentProduct, distillery: currentDistillery, ts: Date.now() });
+    localStorage.setItem('sb_inquiries', JSON.stringify(list));
+
+    document.getElementById('overlay').classList.remove('open');
+    showToast('✅ 送信しました — ' + currentDistillery + ' に届きます');
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var list = JSON.parse(localStorage.getItem('sb_inquiries') || '[]');
+    var section = document.getElementById('history');
+    if (!section) return;
+    if (!list.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('historyList').innerHTML = list.map(function(item) {
+      var d = new Date(item.ts);
+      var date = (d.getMonth()+1) + '/' + d.getDate() + ' ' +
+                 ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+      return '<div class="history-item"><strong>' + item.product + '</strong>（' + item.distillery + '）<br>' +
+             item.name + '：' + item.msg + '<div class="date">' + date + '</div></div>';
+    }).join('');
+  }
+
+  /* ── トースト ── */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
+
+  renderHistory();
+</script>
+
+</body>
+</html>

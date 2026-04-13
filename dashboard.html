@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpiritsBridge</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background: #F5F1E8; color: #3D2817; }
+
+/* ログイン */
+#login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #3D2817;
+}
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  width: 320px;
+  text-align: center;
+}
+.login-box h2 { margin: 0 0 6px; }
+.login-box p  { color: #888; font-size: 13px; margin: 0 0 24px; }
+.login-box input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.login-box input:focus { outline: none; border-color: #E8A854; }
+.error { color: red; font-size: 12px; margin-bottom: 8px; display: none; }
+
+/* ダッシュボード */
+#dashboard { display: none; }
+.topbar {
+  background: #3D2817;
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar h1 { margin: 0; font-size: 18px; color: #F5C97A; }
+.content { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #ddd;
+}
+.card h2 { margin: 0 0 16px; font-size: 16px; border-bottom: 2px solid #E8A854; padding-bottom: 8px; }
+
+.info-row { display: flex; gap: 24px; flex-wrap: wrap; }
+.info-item { flex: 1; min-width: 160px; }
+.info-item .label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
+.info-item .value { font-size: 16px; font-weight: bold; margin-top: 4px; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 8px 10px; font-size: 12px; color: #888; border-bottom: 2px solid #ddd; }
+td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+tr:hover td { background: #faf8f5; }
+
+/* ボタン */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+.btn-orange { background: #E8A854; color: white; }
+.btn-orange:hover { background: #d4943e; }
+.btn-gray   { background: rgba(255,255,255,0.15); color: white; }
+.btn-gray:hover { background: rgba(255,255,255,0.25); }
+</style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div id="login">
+  <div class="login-box">
+    <h2>SpiritsBridge</h2>
+    <p>蒸留所管理ダッシュボード</p>
+    <input type="text"     id="uid" placeholder="ユーザーID（user1）">
+    <input type="password" id="upw" placeholder="パスワード（password1）">
+    <div class="error" id="err">IDまたはパスワードが違います</div>
+    <button class="btn btn-orange" style="width:100%;padding:12px;" onclick="doLogin()">ログイン</button>
+    <p style="font-size:11px;color:#aaa;margin-top:12px">user1 / password1 でログインできます</p>
+  </div>
+</div>
+
+<!-- ダッシュボード -->
+<div id="dashboard">
+  <div class="topbar">
+    <h1>SpiritsBridge 管理画面</h1>
+    <button class="btn btn-gray" onclick="doLogout()">ログアウト</button>
+  </div>
+  <div class="content">
+
+    <!-- 蒸留所情報 -->
+    <div class="card">
+      <h2>蒸留所情報</h2>
+      <div class="info-row">
+        <div class="info-item"><div class="label">蒸留所名</div><div class="value" id="d-name"></div></div>
+        <div class="info-item"><div class="label">所在地</div><div class="value" id="d-region"></div></div>
+        <div class="info-item"><div class="label">代表者</div><div class="value" id="d-rep"></div></div>
+        <div class="info-item"><div class="label">創業年</div><div class="value" id="d-founded"></div></div>
+      </div>
+    </div>
+
+    <!-- 商品一覧 -->
+    <div class="card">
+      <h2>商品一覧</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>商品名</th>
+            <th>カテゴリー</th>
+            <th>ABV</th>
+            <th>容量</th>
+            <th>卸価格</th>
+          </tr>
+        </thead>
+        <tbody id="prod-table"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var DATA = {
+  user1: {
+    password: 'password1',
+    name: '余市蒸溜所',
+    region: '北海道余市郡',
+    rep: '田中 一郎',
+    founded: '1934年',
+    products: [
+      { name: '余市シングルモルト 10年', cat: 'ウイスキー', abv: '43%', vol: '700ml', price: '¥9,800' },
+      { name: '余市モルト NAS',          cat: 'ウイスキー', abv: '45%', vol: '700ml', price: '¥6,500' },
+      { name: '余市ピーテッド 試験醸造', cat: 'ウイスキー', abv: '57%', vol: '500ml', price: '¥14,000' }
+    ]
+  },
+  user2: {
+    password: 'password2',
+    name: '京都ボタニカルズ蒸留所',
+    region: '京都府京都市',
+    rep: '中村 雅子',
+    founded: '2019年',
+    products: [
+      { name: '京都ドライジン 山椒', cat: 'ジン', abv: '47%', vol: '700ml', price: '¥7,200' },
+      { name: '京都ジン 宇治抹茶',   cat: 'ジン', abv: '43%', vol: '500ml', price: '¥8,500' },
+      { name: '京都ジン 桜 春限定',  cat: 'ジン', abv: '40%', vol: '500ml', price: '¥9,800' }
+    ]
+  }
+};
+
+function doLogin() {
+  var uid = document.getElementById('uid').value.trim();
+  var upw = document.getElementById('upw').value;
+
+  if (DATA[uid] && DATA[uid].password === upw) {
+    var d = DATA[uid];
+    document.getElementById('d-name').textContent    = d.name;
+    document.getElementById('d-region').textContent  = d.region;
+    document.getElementById('d-rep').textContent     = d.rep;
+    document.getElementById('d-founded').textContent = d.founded;
+
+    var rows = '';
+    for (var i = 0; i < d.products.length; i++) {
+      var p = d.products[i];
+      rows += '<tr><td>' + p.name + '</td><td>' + p.cat + '</td><td>' + p.abv + '</td><td>' + p.vol + '</td><td>' + p.price + '</td></tr>';
+    }
+    document.getElementById('prod-table').innerHTML = rows;
+
+    document.getElementById('login').style.display     = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('err').style.display       = 'none';
+  } else {
+    document.getElementById('err').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login').style.display     = 'flex';
+  document.getElementById('uid').value = '';
+  document.getElementById('upw').value = '';
+}
+
+document.getElementById('upw').onkeydown = function(e) {
+  if (e.key === 'Enter') doLogin();
+};
+</script>
+</body>
+</html>

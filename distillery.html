@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>余市クラフト蒸留所 — SpiritsBridge</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0E1F3D;
+      --navy-d:    #091529;
+      --navy-m:    #1A3260;
+      --navy-l:    #2A4A80;
+      --forest:    #1B3D2F;
+      --forest-m:  #2A5C42;
+      --forest-l:  #3A7A58;
+      --gold:      #C9A84C;
+      --gold-l:    #E8C97A;
+      --gold-d:    #9A7A30;
+      --cream:     #F8F3EA;
+      --warm-w:    #FDFAF5;
+      --light:     #EDE5D4;
+      --gray:      #6B6057;
+      --gray-l:    #9B9088;
+      --dark:      #1A1208;
+      --white:     #FFFFFF;
+      --red:       #B03A2E;
+      --green-ok:  #1E6B45;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif;
+      background: var(--warm-w);
+      color: var(--dark);
+      line-height: 1.7;
+    }
+
+    /* ===== GLOBAL NAV ===== */
+    .global-nav {
+      background: var(--navy-d);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .nav-logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-d));
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .nav-logo-text { color: var(--white); font-size: 17px; font-weight: 700; letter-spacing: 1px; font-family: sans-serif; }
+    .nav-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: rgba(255,255,255,0.55);
+      font-family: sans-serif;
+    }
+    .breadcrumb a { color: rgba(255,255,255,0.55); text-decoration: none; transition: color .2s; }
+    .breadcrumb a:hover { color: var(--gold-l); }
+    .breadcrumb .sep { opacity: 0.4; }
+    .breadcrumb .current { color: rgba(255,255,255,0.85); }
+    .nav-actions-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .nav-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, border-color .2s;
+      font-family: sans-serif;
+    }
+    .nav-pill:hover { background: rgba(255,255,255,0.15); border-color: var(--gold); }
+    .nav-pill.gold { background: var(--gold); border-color: var(--gold); color: var(--navy-d); font-weight: 700; }
+    .nav-pill.gold:hover { background: var(--gold-l); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      height: 580px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      width: 100%; height: 100%;
+      background:
+        linear-gradient(180deg,
+          rgba(9,21,41,0.3) 0%,
+          rgba(9,21,41,0.1) 40%,
+          rgba(9,21,41,0.75) 80%,
+          rgba(9,21,41,0.95) 100%),
+        linear-gradient(135deg, #0E2A20 0%, #1B3D2F 30%, #0E1F3D 70%, #091529 100%);
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 120px;
+      position: relative;
+    }
+    .hero-bg-texture {
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(27,61,47,0.4) 0%, transparent 50%);
+    }
+    .hero-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0 48px 40px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .hero-info {}
+    .hero-region {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(201,168,76,0.2);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold-l);
+      font-size: 12px;
+      font-family: sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+    .hero-name {
+      font-size: 52px;
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .hero-name em { color: var(--gold-l); font-style: normal; font-weight: 700; }
+    .hero-tagline {
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      font-family: sans-serif;
+      font-style: italic;
+    }
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .hero-rating {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 12px 18px;
+      text-align: center;
+    }
+    .hero-rating .rating-num { font-size: 32px; font-weight: 700; color: var(--gold-l); font-family: sans-serif; line-height: 1; }
+    .hero-rating .rating-stars { color: var(--gold); font-size: 14px; margin: 4px 0; }
+    .hero-rating .rating-count { font-size: 11px; color: rgba(255,255,255,0.5); font-family: sans-serif; }
+    .hero-since {
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      font-family: sans-serif;
+      letter-spacing: 1px;
+    }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 16px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 12px; font-family: sans-serif;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(5px)} }
+
+    /* ===== ACTION BAR ===== */
+    .action-bar {
+      background: var(--navy);
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .action-tab {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: sans-serif;
+      padding: 16px 20px;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+      white-space: nowrap;
+    }
+    .action-tab:hover { color: rgba(255,255,255,0.8); }
+    .action-tab.active { color: var(--gold-l); border-bottom-color: var(--gold); }
+    .action-bar-ctas {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s;
+      border: none;
+      white-space: nowrap;
+    }
+    .btn-gold { background: var(--gold); color: var(--navy-d); }
+    .btn-gold:hover { background: var(--gold-l); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+    .btn-navy { background: var(--navy-m); color: var(--white); border: 1px solid rgba(255,255,255,0.15); }
+    .btn-navy:hover { background: var(--navy-l); }
+    .btn-outline-gold { background: transparent; color: var(--gold-l); border: 1px solid var(--gold); }
+    .btn-outline-gold:hover { background: rgba(201,168,76,0.1); }
+    .btn-outline-white { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.25); }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+    /* ===== MAIN LAYOUT ===== */
+    .page-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* ===== STORY SECTION ===== */
+    .section { margin-bottom: 60px; }
+    .section-label {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 24px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--light), transparent);
+    }
+    .section-label span {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-d);
+      font-family: sans-serif;
+      white-space: nowrap;
+    }
+    .section-label .dot {
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .story-text {
+      font-size: 17px;
+      line-height: 2;
+      color: #3A2E20;
+      position: relative;
+      padding-left: 24px;
+      border-left: 3px solid var(--gold);
+    }
+    .story-text p { margin-bottom: 20px; }
+    .story-text p:last-child { margin-bottom: 0; }
+
+    /* ===== VIDEO SECTION ===== */
+    .video-section {
+      background: var(--navy-d);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 60px;
+    }
+    .video-header {
+      padding: 28px 32px 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .video-header h2 { color: var(--white); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
+    .video-header h2 em { color: var(--gold-l); font-style: normal; font-weight: 700; }
+    .video-header p { color: rgba(255,255,255,0.5); font-size: 13px; font-family: sans-serif; }
+    .video-tabs {
+      display: flex; gap: 4px;
+      padding: 20px 32px 0;
+    }
+    .video-tab {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+      font-size: 12px; font-family: sans-serif;
+      padding: 6px 14px; border-radius: 4px;
+      cursor: pointer; transition: all .2s;
+    }
+    .video-tab.active { background: var(--gold); border-color: var(--gold); color: var(--navy-d); font-weight: 700; }
+    .video-tab:hover:not(.active) { background: rgba(255,255,255,0.12); color: var(--white); }
+    .video-frame {
+      margin: 20px 32px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16/9;
+      position: relative;
+      cursor: pointer;
+    }
+    .video-thumbnail {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0A1A10 0%, #1B3D2F 50%, #0E1F3D 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .video-thumbnail-text {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 32px 20px 16px;
+      color: var(--white);
+    }
+    .video-thumbnail-text h3 { font-size: 18px; margin-bottom: 4px; }
+    .video-thumbnail-text span { font-size: 12px; color: rgba(255,255,255,0.6); font-family: sans-serif; }
+    .play-btn {
+      width: 72px; height: 72px;
+      background: rgba(201,168,76,0.9);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 0 8px rgba(201,168,76,0.2), 0 0 0 16px rgba(201,168,76,0.1);
+      transition: transform .2s;
+    }
+    .video-frame:hover .play-btn { transform: scale(1.1); }
+    .video-playlist {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px 32px 32px;
+    }
+    .playlist-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .playlist-item:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); }
+    .playlist-item.active { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+    .playlist-thumb {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 6px; background: var(--navy-m);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .playlist-info { min-width: 0; }
+    .playlist-title { font-size: 12px; color: var(--white); line-height: 1.4; font-family: sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .playlist-dur { font-size: 11px; color: rgba(255,255,255,0.4); font-family: sans-serif; margin-top: 2px; }
+
+    /* ===== CRAFTSMAN ===== */
+    .craftsmen-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .craftsman-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid var(--light);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .craftsman-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .craftsman-top {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--forest) 100%);
+      padding: 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .craftsman-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      background: var(--navy-m);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+    }
+    .craftsman-name-block { color: var(--white); }
+    .craftsman-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+    .craftsman-title { font-size: 12px; color: var(--gold-l); font-family: sans-serif; letter-spacing: 1px; }
+    .craftsman-exp { font-size: 11px; color: rgba(255,255,255,0.5); font-family: sans-serif; margin-top: 4px; }
+    .craftsman-body { padding: 18px 20px; }
+    .craftsman-quote {
+      font-size: 14px; line-height: 1.8;
+      color: #4A3A28;
+      font-style: italic;
+      position: relative;
+      padding-left: 16px;
+    }
+    .craftsman-quote::before {
+      content: '"';
+      position: absolute; left: 0; top: -4px;
+      font-size: 32px; color: var(--gold); line-height: 1;
+      font-family: Georgia, serif;
+    }
+    .craftsman-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .craftsman-tag {
+      background: var(--cream);
+      color: var(--gray);
+      font-size: 11px; font-family: sans-serif;
+      padding: 3px 9px; border-radius: 12px;
+    }
+
+    /* ===== PRODUCTS SECTION ===== */
+    .product-tabs {
+      display: flex; gap: 4px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .product-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px; font-family: sans-serif;
+      cursor: pointer;
+      border: 1px solid var(--light);
+      background: var(--white);
+      color: var(--gray);
+      transition: all .2s;
+    }
+    .product-tab .tab-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .product-tab.active, .product-tab:hover { border-color: var(--navy); background: var(--navy); color: var(--white); }
+    .tab-whisky .tab-dot  { background: #C9A84C; }
+    .tab-cocktail .tab-dot { background: #2A7A9A; }
+    .tab-trial .tab-dot   { background: #8A4ABB; }
+    .tab-all .tab-dot     { background: var(--gray); }
+
+    .product-list { display: flex; flex-direction: column; gap: 16px; }
+    .product-row {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--light);
+      display: flex; gap: 0;
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+      cursor: pointer;
+    }
+    .product-row:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateX(4px); }
+    .product-row-img {
+      width: 120px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      background: var(--cream);
+    }
+    .pi-w { background: linear-gradient(135deg, #F5EED5, #E8D5A0); }
+    .pi-c { background: linear-gradient(135deg, #D5E8F5, #A0C8E8); }
+    .pi-t { background: linear-gradient(135deg, #EDD5F5, #CCA0E8); }
+    .product-row-body { flex: 1; padding: 18px 20px; }
+    .product-row-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .product-row-type {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-family: sans-serif;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 3px; margin-bottom: 6px;
+    }
+    .type-whisky  { background: rgba(201,168,76,0.15); color: #8A6820; }
+    .type-cocktail { background: rgba(42,122,154,0.15); color: #1A5A7A; }
+    .type-trial   { background: rgba(138,74,187,0.15); color: #6A2A9A; }
+    .product-row-name { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .product-row-price { text-align: right; flex-shrink: 0; }
+    .price-big { font-size: 20px; font-weight: 800; color: var(--navy); font-family: sans-serif; }
+    .price-label { font-size: 11px; color: var(--gray-l); font-family: sans-serif; }
+    .product-row-story {
+      font-size: 13px; color: var(--gray);
+      line-height: 1.7;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--gold);
+      padding-left: 12px;
+    }
+    .product-row-footer {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .product-tag {
+      background: var(--cream); color: var(--gray);
+      font-size: 11px; font-family: sans-serif;
+      padding: 3px 9px; border-radius: 10px;
+    }
+    .product-stock { margin-left: auto; font-size: 12px; font-family: sans-serif; font-weight: 600; }
+    .in-stock  { color: var(--green-ok); }
+    .low-stock { color: var(--red); }
+    .product-row-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      border-left: 1px solid var(--light);
+      flex-shrink: 0;
+      width: 140px;
+    }
+    .btn-sm {
+      padding: 7px 12px; font-size: 12px; border-radius: 4px;
+      font-family: sans-serif; font-weight: 600;
+      cursor: pointer; text-align: center; text-decoration: none;
+      transition: all .2s; border: none; display: block;
+    }
+    .btn-sm-gold { background: var(--gold); color: var(--navy-d); }
+    .btn-sm-gold:hover { background: var(--gold-l); }
+    .btn-sm-outline { background: transparent; border: 1px solid var(--navy); color: var(--navy); }
+    .btn-sm-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-sm-ghost { background: transparent; border: 1px solid var(--light); color: var(--gray); font-size: 11px; }
+    .btn-sm-ghost:hover { border-color: var(--gold); color: var(--gold-d); }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {}
+    .sidebar-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--light);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .sidebar-card-header {
+      background: var(--navy);
+      padding: 16px 20px;
+      color: var(--white);
+    }
+    .sidebar-card-header h3 { font-size: 15px; font-weight: 700; }
+    .sidebar-card-header p  { font-size: 12px; color: rgba(255,255,255,0.55); font-family: sans-serif; margin-top: 2px; }
+    .sidebar-card-body { padding: 20px; }
+
+    .connect-cta {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 20px;
+    }
+    .cta-main {
+      width: 100%;
+      background: var(--gold);
+      color: var(--navy-d);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 800;
+      font-family: sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .cta-main:hover { background: var(--gold-l); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(201,168,76,0.35); }
+    .cta-sec {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      font-family: sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .cta-sec:hover { background: var(--navy); color: var(--white); }
+    .cta-ghost {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--light);
+      color: var(--gray);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .cta-ghost:hover { border-color: var(--forest-l); color: var(--forest); }
+
+    .connection-note {
+      background: var(--cream);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 11px; color: var(--gray);
+      font-family: sans-serif;
+      line-height: 1.6;
+    }
+    .connection-note strong { color: var(--gold-d); }
+
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--light);
+      font-size: 13px; font-family: sans-serif;
+    }
+    .info-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-list .info-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+    .info-list .info-label { color: var(--gray-l); font-size: 11px; }
+    .info-list .info-val { color: var(--dark); font-weight: 600; margin-left: auto; text-align: right; }
+
+    .follower-count {
+      text-align: center; padding: 16px 0 8px;
+      border-top: 1px solid var(--light);
+      margin-top: 8px;
+    }
+    .follower-num { font-size: 28px; font-weight: 800; color: var(--navy); font-family: sans-serif; }
+    .follower-label { font-size: 12px; color: var(--gray); font-family: sans-serif; }
+    .follower-avatars {
+      display: flex; justify-content: center;
+      margin-top: 8px; gap: -4px;
+    }
+    .follower-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      margin-left: -6px;
+    }
+    .fa1 { background: #C97B2A; }
+    .fa2 { background: #2A7ABB; }
+    .fa3 { background: #2A9A5A; }
+    .fa4 { background: #9A2A7A; }
+    .fa5 { background: #7A6A2A; }
+    .follower-more { font-size: 11px; color: var(--gray); margin-left: 10px; font-family: sans-serif; align-self: center; }
+
+    .award-list { list-style: none; }
+    .award-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--light);
+      font-size: 13px; font-family: sans-serif;
+    }
+    .award-item:last-child { border-bottom: none; }
+    .award-icon { font-size: 20px; flex-shrink: 0; }
+    .award-name { font-weight: 600; color: var(--dark); }
+    .award-year { font-size: 11px; color: var(--gray-l); }
+
+    /* ===== MESSAGE MODAL (overlay) ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--warm-w);
+      border-radius: 16px;
+      width: 100%; max-width: 520px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      overflow: hidden;
+      transform: scale(0.95) translateY(16px);
+      transition: transform .3s;
+    }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+    .modal-head {
+      background: var(--navy-d);
+      padding: 20px 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .modal-head h3 { color: var(--white); font-size: 17px; font-weight: 700; }
+    .modal-head p  { color: rgba(255,255,255,0.5); font-size: 12px; font-family: sans-serif; margin-top: 2px; }
+    .modal-close {
+      margin-left: auto;
+      background: rgba(255,255,255,0.1); border: none;
+      color: var(--white); width: 30px; height: 30px;
+      border-radius: 50%; cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.2); }
+    .modal-body { padding: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-family: sans-serif; font-weight: 700; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid var(--light);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--dark);
+      background: var(--white);
+      font-family: sans-serif;
+      transition: border-color .2s;
+      outline: none;
+    }
+    .form-group select:focus,
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(14,31,61,0.08); }
+    .form-group textarea { min-height: 120px; resize: vertical; }
+    .modal-footer {
+      padding: 16px 24px 24px;
+      display: flex; gap: 10px;
+    }
+    .modal-footer .btn { flex: 1; justify-content: center; }
+
+    /* ===== REQUEST MODAL ===== */
+    .request-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .request-tag {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; font-family: sans-serif;
+      border: 1px solid var(--light);
+      background: var(--white); color: var(--gray);
+      cursor: pointer; transition: all .2s;
+    }
+    .request-tag.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .request-tag:hover:not(.selected) { border-color: var(--navy-m); }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--navy-d);
+      color: var(--white);
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px; font-family: sans-serif;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex; align-items: center; gap: 10px;
+      z-index: 600;
+      transform: translateY(80px);
+      transition: transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .toast.show { transform: translateY(0); }
+    .toast-icon { font-size: 20px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 960px) {
+      .page-body { grid-template-columns: 1fr; }
+      .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    }
+    @media (max-width: 700px) {
+      .hero { height: auto; min-height: 420px; }
+      .hero-content { flex-direction: column; padding: 0 24px 32px; }
+      .hero-name { font-size: 34px; }
+      .hero-meta { align-items: flex-start; flex-direction: row; gap: 12px; }
+      .action-bar { padding: 0 16px; overflow-x: auto; }
+      .action-bar-ctas { display: none; }
+      .page-body { padding: 24px 16px; gap: 32px; }
+      .craftsmen-grid { grid-template-columns: 1fr; }
+      .video-playlist { grid-template-columns: 1fr; }
+      .sidebar { display: flex; flex-direction: column; }
+      .product-row { flex-direction: column; }
+      .product-row-img { width: 100%; height: 100px; }
+      .product-row-actions { width: 100%; flex-direction: row; border-left: none; border-top: 1px solid var(--light); }
+      .hero-bg { font-size: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- GLOBAL NAV -->
+<nav class="global-nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🥃</div>
+    <span class="nav-logo-text">SpiritsBridge</span>
+  </a>
+  <div class="nav-divider"></div>
+  <div class="breadcrumb">
+    <a href="index.html">トップ</a>
+    <span class="sep">›</span>
+    <a href="#">蒸留所一覧</a>
+    <span class="sep">›</span>
+    <a href="#">北海道</a>
+    <span class="sep">›</span>
+    <span class="current">余市クラフト蒸留所</span>
+  </div>
+  <div class="nav-actions-right">
+    <a href="#" class="nav-pill">🔍 検索</a>
+    <a href="#" class="nav-pill">🛒 カート (3)</a>
+    <a href="#" class="nav-pill gold">ログイン</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-texture"></div>
+    🏔
+  </div>
+  <div class="hero-content">
+    <div class="hero-info">
+      <div class="hero-region">📍 北海道 余市郡 · クラフト蒸留所</div>
+      <h1 class="hero-name"><em>余市</em>クラフト蒸留所</h1>
+      <p class="hero-tagline">「大地の記憶を、一滴に宿す」</p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-rating">
+        <div class="rating-num">4.9</div>
+        <div class="rating-stars">★★★★★</div>
+        <div class="rating-count">312件のレビュー</div>
+      </div>
+      <div class="hero-since">創業 1987年 · 37年の歴史</div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>スクロールして詳細を見る</span>
+    <span>↓</span>
+  </div>
+</section>
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <a href="#story" class="action-tab active">物語</a>
+  <a href="#interview" class="action-tab">インタビュー動画</a>
+  <a href="#craftsmen" class="action-tab">職人紹介</a>
+  <a href="#products" class="action-tab">商品カタログ</a>
+  <a href="#awards" class="action-tab">受賞歴</a>
+  <div class="action-bar-ctas">
+    <button class="btn btn-outline-white" onclick="openModal('message')">✉ メッセージを送る</button>
+    <button class="btn btn-outline-gold" onclick="openModal('request')">📋 リストに入れたい</button>
+    <button class="btn btn-gold" onclick="openModal('connect')">🤝 この蒸留所とつながる</button>
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- MAIN COLUMN -->
+  <main>
+
+    <!-- ===== STORY ===== -->
+    <section class="section" id="story">
+      <div class="section-label">
+        <div class="dot"></div>
+        <span>蒸留所の物語</span>
+      </div>
+      <div class="story-text">
+        <p>北海道余市郡の大地に根ざした私たちの蒸留所は、1987年、先代・田中勝雄が「北の大地が育んだ素材だけで、世界に通じるウイスキーをつくりたい」という一念のもとに創業しました。余市の冷涼な気候と、羊蹄山系から流れる清冽な伏流水——この地でしか出会えない自然の恵みを、樽の中に閉じ込めることが私たちの使命です。</p>
+        <p>現在は二代目・田中誠が蒸留長を務め、伝統的なポットスチル蒸留を守りながらも、北海道産の大麦や山ぶどう、昆布など地元素材を使ったボタニカルジンや試験醸造品に積極的に取り組んでいます。年間生産量はあえて少量に抑え、一本一本に職人の魂を注ぎ込む「小さくて誠実な蒸留所」であり続けることを誇りとしています。</p>
+        <p>バーテンダーの皆さんへ——私たちの酒は、あなたのカウンターで初めて完成します。北の大地の物語を、ゲストと分かち合っていただけることを心から願っています。</p>
+      </div>
+    </section>
+
+    <!-- ===== INTERVIEW VIDEO ===== -->
+    <section id="interview" class="video-section">
+      <div class="video-header">
+        <div>
+          <h2>職人の<em>声</em>を聴く</h2>
+          <p>インタビュー動画シリーズ · YouTube / Vimeo 対応</p>
+        </div>
+      </div>
+      <div class="video-tabs">
+        <button class="video-tab active" onclick="switchTab(this, 0)">▶ 蒸留長インタビュー</button>
+        <button class="video-tab" onclick="switchTab(this, 1)">🏭 蒸留所ツアー</button>
+        <button class="video-tab" onclick="switchTab(this, 2)">🥃 テイスティング解説</button>
+      </div>
+      <div class="video-frame" id="videoFrame">
+        <div class="video-thumbnail">
+          <div class="play-btn">▶</div>
+          <div class="video-thumbnail-text">
+            <h3 id="videoTitle">「ウイスキーは待つことを教えてくれる」— 蒸留長 田中誠</h3>
+            <span id="videoSub">2024年秋 · 余市蒸留所にて収録 · 18分</span>
+          </div>
+        </div>
+      </div>
+      <div class="video-playlist">
+        <div class="playlist-item active" onclick="selectVideo(this, 0)">
+          <div class="playlist-thumb">🎤</div>
+          <div class="playlist-info">
+            <div class="playlist-title">蒸留長インタビュー Vol.1</div>
+            <div class="playlist-dur">18分 · 2024年秋</div>
+          </div>
+        </div>
+        <div class="playlist-item" onclick="selectVideo(this, 1)">
+          <div class="playlist-thumb">🏭</div>
+          <div class="playlist-info">
+            <div class="playlist-title">ポットスチル見学ツアー</div>
+            <div class="playlist-dur">24分 · 2024年夏</div>
+          </div>
+        </div>
+        <div class="playlist-item" onclick="selectVideo(this, 2)">
+          <div class="playlist-thumb">🥃</div>
+          <div class="playlist-info">
+            <div class="playlist-title">熟成庫の秘密</div>
+            <div class="playlist-dur">12分 · 2024年春</div>
+          </div>
+        </div>
+        <div class="playlist-item" onclick="selectVideo(this, 3)">
+          <div class="playlist-thumb">🌿</div>
+          <div class="playlist-info">
+            <div class="playlist-title">ボタニカルジン誕生秘話</div>
+            <div class="playlist-dur">15分 · 2023年冬</div>
+          </div>
+        </div>
+        <div class="playlist-item" onclick="selectVideo(this, 4)">
+          <div class="playlist-thumb">📖</div>
+          <div class="playlist-info">
+            <div class="playlist-title">創業者の想い (アーカイブ)</div>
+            <div class="playlist-dur">32分 · 1998年</div>
+          </div>
+        </div>
+        <div class="playlist-item" onclick="selectVideo(this, 5)">
+          <div class="playlist-thumb">🍾</div>
+          <div class="playlist-info">
+            <div class="playlist-title">試験醸造 #7 完成発表</div>
+            <div class="playlist-dur">8分 · 2025年春</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CRAFTSMEN ===== -->
+    <section class="section" id="craftsmen">
+      <div class="section-label">
+        <div class="dot"></div>
+        <span>職人紹介</span>
+      </div>
+      <div class="craftsmen-grid">
+        <div class="craftsman-card">
+          <div class="craftsman-top">
+            <div class="craftsman-avatar">👨‍🍳</div>
+            <div class="craftsman-name-block">
+              <div class="craftsman-name">田中 誠</div>
+              <div class="craftsman-title">MASTER DISTILLER · 蒸留長</div>
+              <div class="craftsman-exp">経験 22年 · スコットランド研修歴あり</div>
+            </div>
+          </div>
+          <div class="craftsman-body">
+            <div class="craftsman-quote">
+              「僕が目指すのは、飲んだ人が北海道の景色を思い浮かべるウイスキーです。ラベルを見ずとも、この土地のものだとわかる。そんな一本を毎年届けたい。」
+            </div>
+            <div class="craftsman-tags">
+              <span class="craftsman-tag">シングルモルト</span>
+              <span class="craftsman-tag">ピート</span>
+              <span class="craftsman-tag">樽熟成管理</span>
+              <span class="craftsman-tag">大麦選定</span>
+            </div>
+          </div>
+        </div>
+        <div class="craftsman-card">
+          <div class="craftsman-top">
+            <div class="craftsman-avatar">👩‍🔬</div>
+            <div class="craftsman-name-block">
+              <div class="craftsman-name">佐藤 梨花</div>
+              <div class="craftsman-title">HEAD BOTANIST · 副蒸留長</div>
+              <div class="craftsman-exp">経験 8年 · 北大農学部出身</div>
+            </div>
+          </div>
+          <div class="craftsman-body">
+            <div class="craftsman-quote">
+              「北海道には、まだ誰もスピリッツに使っていない素材が無数にあります。昆布、行者ニンニク、エゾヤマザクラ——自分だけのジンを作る旅は終わらない。」
+            </div>
+            <div class="craftsman-tags">
+              <span class="craftsman-tag">クラフトジン</span>
+              <span class="craftsman-tag">ボタニカル</span>
+              <span class="craftsman-tag">試験醸造</span>
+              <span class="craftsman-tag">北海道素材</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRODUCTS ===== -->
+    <section class="section" id="products">
+      <div class="section-label">
+        <div class="dot"></div>
+        <span>商品カタログ</span>
+      </div>
+
+      <div class="product-tabs">
+        <button class="product-tab tab-all active" onclick="filterProducts('all', this)">
+          <span class="tab-dot" style="background:var(--gray)"></span> すべて (8)
+        </button>
+        <button class="product-tab tab-whisky" onclick="filterProducts('whisky', this)">
+          <span class="tab-dot" style="background:#C9A84C"></span> クラフトウイスキー (4)
+        </button>
+        <button class="product-tab tab-cocktail" onclick="filterProducts('cocktail', this)">
+          <span class="tab-dot" style="background:#2A7A9A"></span> カクテル用 (2)
+        </button>
+        <button class="product-tab tab-trial" onclick="filterProducts('trial', this)">
+          <span class="tab-dot" style="background:#8A4ABB"></span> 試験醸造品 (2)
+        </button>
+      </div>
+
+      <div class="product-list" id="productList">
+
+        <!-- Whisky 1 -->
+        <div class="product-row" data-type="whisky">
+          <div class="product-row-img pi-w">🥃</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-whisky">🥃 クラフトウイスキー</div>
+                <div class="product-row-name">余市シングルモルト 10年 700ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥8,200</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              余市の冷涼な海風と内陸性気候が生む寒暖差の中で、バーボン樽とシェリー樽を組み合わせた10年熟成。ピートのスモーキーさと果実の甘み、潮風のミネラル感が一体となった、この土地にしかない個性を持つ。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">ピート</span>
+              <span class="product-tag">バーボン樽</span>
+              <span class="product-tag">シェリー樽</span>
+              <span class="product-tag">★4.9 (128件)</span>
+              <span class="product-stock in-stock">✓ 在庫47本</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="addToCart(this)">カートへ</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('request')">📋 リクエスト</button>
+          </div>
+        </div>
+
+        <!-- Whisky 2 -->
+        <div class="product-row" data-type="whisky">
+          <div class="product-row-img pi-w">🍂</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-whisky">🥃 クラフトウイスキー</div>
+                <div class="product-row-name">余市 カスクストレングス 2019 700ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥14,800</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              加水なし、冷却濾過なし。樽から直接瓶詰めした、蒸留所の「素顔」。アルコール度数58.4%の力強さの中に、熟したプラム、ダークチョコレート、微かな煙の余韻。本数限定につき、要予約。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">カスクストレングス</span>
+              <span class="product-tag">限定120本</span>
+              <span class="product-tag">58.4%</span>
+              <span class="product-tag">★5.0 (44件)</span>
+              <span class="product-stock low-stock">⚠ 残り9本</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="addToCart(this)">予約する</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('request')">📋 リクエスト</button>
+          </div>
+        </div>
+
+        <!-- Cocktail 1 -->
+        <div class="product-row" data-type="cocktail">
+          <div class="product-row-img pi-c">🍸</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-cocktail">🍸 カクテル用スピリッツ</div>
+                <div class="product-row-name">ユキノハナ ドライジン 500ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥4,800</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              北海道産ジュニパーベリーを主軸に、余市のリンゴ、羅臼昆布、エゾヤマザクラのボタニカル11種を使用。副蒸留長・佐藤梨花が2年がかりで開発。「北の森と海」をグラスの中に再現した、バーテンダーのための素材系ジン。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">ドライジン</span>
+              <span class="product-tag">北海道素材</span>
+              <span class="product-tag">45%</span>
+              <span class="product-tag">★4.8 (73件)</span>
+              <span class="product-stock in-stock">✓ 在庫32本</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="addToCart(this)">カートへ</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('request')">📋 リクエスト</button>
+          </div>
+        </div>
+
+        <!-- Cocktail 2 -->
+        <div class="product-row" data-type="cocktail">
+          <div class="product-row-img pi-c">🌿</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-cocktail">🍸 カクテル用スピリッツ</div>
+                <div class="product-row-name">山ぶどうビアンコ ヴェルモット 500ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥3,600</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              余市産山ぶどうを使ったクラフトヴェルモット。酸味と甘みのバランスが絶妙で、マティーニやネグローニのベースとして高い評価を得ている。バーテンダーからの強い要望に応えて製品化した一品。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">ヴェルモット</span>
+              <span class="product-tag">山ぶどう</span>
+              <span class="product-tag">16%</span>
+              <span class="product-tag">★4.7 (51件)</span>
+              <span class="product-stock in-stock">✓ 在庫28本</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="addToCart(this)">カートへ</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('request')">📋 リクエスト</button>
+          </div>
+        </div>
+
+        <!-- Trial 1 -->
+        <div class="product-row" data-type="trial">
+          <div class="product-row-img pi-t">🔬</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-trial">🔬 試験醸造品 #7</div>
+                <div class="product-row-name">昆布熟成ウォッカ プロトタイプ 200ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥3,200</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              羅臼昆布を使ったウォッカ熟成の試み。グルタミン酸のうまみとウォッカのクリーンさが融合した、前例のない味わい。全国20店舗限定でテスト流通中。バーテンダーの皆さんのフィードバックを製品化に活かします。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">試験醸造</span>
+              <span class="product-tag">昆布</span>
+              <span class="product-tag">40%</span>
+              <span class="product-tag">FB求む</span>
+              <span class="product-stock low-stock">⚠ テスト流通 (20本限定)</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="addToCart(this)">申込む</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('request')">💬 意見を送る</button>
+          </div>
+        </div>
+
+        <!-- Trial 2 -->
+        <div class="product-row" data-type="trial">
+          <div class="product-row-img pi-t">🌸</div>
+          <div class="product-row-body">
+            <div class="product-row-header">
+              <div>
+                <div class="product-row-type type-trial">🔬 試験醸造品 #9</div>
+                <div class="product-row-name">エゾヤマザクラ アクアビット 200ml</div>
+              </div>
+              <div class="product-row-price">
+                <div class="price-big">¥2,800</div>
+                <div class="price-label">1本 / 税別</div>
+              </div>
+            </div>
+            <div class="product-row-story">
+              スカンジナビアのアクアビットに着想を得た、北海道版スピリッツ。エゾヤマザクラの花びらとキャラウェイシードを使用。製品化を検討中のため、バーテンダーからの忌憚のない意見を求めています。
+            </div>
+            <div class="product-row-footer">
+              <span class="product-tag">試験醸造</span>
+              <span class="product-tag">アクアビット</span>
+              <span class="product-tag">42%</span>
+              <span class="product-tag">未発売</span>
+              <span class="product-stock low-stock">⚠ モニター限定</span>
+            </div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-sm btn-sm-gold" onclick="openModal('request')">モニター申込</button>
+            <button class="btn-sm btn-sm-outline">詳細を見る</button>
+            <button class="btn-sm btn-sm-ghost" onclick="openModal('message')">💬 意見を送る</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- CTA Card -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">
+        <h3>🤝 この蒸留所とつながる</h3>
+        <p>直接取引・取材・コラボを申し込む</p>
+      </div>
+      <div class="sidebar-card-body">
+        <div class="connect-cta">
+          <button class="cta-main" onclick="openModal('connect')">
+            🤝 つながりを申請する
+          </button>
+          <button class="cta-sec" onclick="openModal('message')">
+            ✉ メッセージを送る
+          </button>
+          <button class="cta-ghost" onclick="openModal('request')">
+            📋 このお酒をリストに入れたい
+          </button>
+        </div>
+        <div class="connection-note">
+          <strong>✓ 48時間以内に返信</strong>あり<br>
+          <strong>✓ サンプル提供</strong>可能（要相談）<br>
+          <strong>✓ 蒸留所見学</strong>受付中（要予約）
+        </div>
+
+        <div class="follower-count">
+          <div class="follower-num">2,340</div>
+          <div class="follower-label">バーテンダーがフォロー中</div>
+          <div class="follower-avatars">
+            <div class="follower-avatar fa1">🍸</div>
+            <div class="follower-avatar fa2">🥂</div>
+            <div class="follower-avatar fa3">🍹</div>
+            <div class="follower-avatar fa4">🥃</div>
+            <div class="follower-avatar fa5">🍾</div>
+            <span class="follower-more">他 2,335人</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">
+        <h3>🏭 蒸留所情報</h3>
+      </div>
+      <div class="sidebar-card-body">
+        <ul class="info-list">
+          <li>
+            <span class="info-icon">📍</span>
+            <div>
+              <div class="info-label">所在地</div>
+              <div class="info-val">北海道余市郡余市町</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">🏗</span>
+            <div>
+              <div class="info-label">創業年</div>
+              <div class="info-val">1987年（37年）</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">👥</span>
+            <div>
+              <div class="info-label">スタッフ</div>
+              <div class="info-val">14名</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">📦</span>
+            <div>
+              <div class="info-label">年間生産量</div>
+              <div class="info-val">約28,000本</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">💧</span>
+            <div>
+              <div class="info-label">仕込み水</div>
+              <div class="info-val">羊蹄山系伏流水</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">🌾</span>
+            <div>
+              <div class="info-label">原料</div>
+              <div class="info-val">北海道産大麦100%</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">🚚</span>
+            <div>
+              <div class="info-label">最小発注</div>
+              <div class="info-val">6本〜</div>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">💳</span>
+            <div>
+              <div class="info-label">支払い</div>
+              <div class="info-val">掛け売り対応可</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Awards Card -->
+    <div class="sidebar-card" id="awards">
+      <div class="sidebar-card-header">
+        <h3>🏆 受賞歴</h3>
+      </div>
+      <div class="sidebar-card-body">
+        <ul class="award-list">
+          <li class="award-item">
+            <span class="award-icon">🥇</span>
+            <div>
+              <div class="award-name">WWA 世界ウイスキー大賞</div>
+              <div class="award-year">金賞 · 2024年</div>
+            </div>
+          </li>
+          <li class="award-item">
+            <span class="award-icon">🏅</span>
+            <div>
+              <div class="award-name">ISC ロンドン国際スピリッツ</div>
+              <div class="award-year">銀賞 · 2023年</div>
+            </div>
+          </li>
+          <li class="award-item">
+            <span class="award-icon">⭐</span>
+            <div>
+              <div class="award-name">日本クラフトスピリッツ大賞</div>
+              <div class="award-year">最優秀賞 · 2023年</div>
+            </div>
+          </li>
+          <li class="award-item">
+            <span class="award-icon">🌿</span>
+            <div>
+              <div class="award-name">Gin of the Year Japan</div>
+              <div class="award-year">ユキノハナ受賞 · 2022年</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Connect Modal -->
+<div class="modal-overlay" id="modal-connect">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>🤝 この蒸留所とつながる</h3>
+        <p>余市クラフト蒸留所への取引申請</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('connect')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>申請の目的</label>
+        <select>
+          <option>定期仕入れ・卸取引</option>
+          <option>スポット購入（単発）</option>
+          <option>メニュー開発・コラボ</option>
+          <option>試飲サンプル請求</option>
+          <option>蒸留所見学・取材</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>バー・店舗名</label>
+        <input type="text" placeholder="例：Bar NORTH 渋谷店">
+      </div>
+      <div class="form-group">
+        <label>月間発注見込み（本数）</label>
+        <select>
+          <option>6〜12本</option>
+          <option>13〜24本</option>
+          <option>25〜50本</option>
+          <option>50本以上</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>自己紹介・メッセージ</label>
+        <textarea placeholder="あなたのバーのコンセプトや、この蒸留所への思いを自由に書いてください..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-navy" onclick="closeModal('connect')">キャンセル</button>
+      <button class="btn btn-gold" onclick="submitForm('connect')">申請を送る →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal-overlay" id="modal-message">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>✉ メッセージを送る</h3>
+        <p>余市クラフト蒸留所 · 48時間以内に返信</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('message')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>件名</label>
+        <select>
+          <option>商品についての質問</option>
+          <option>試験醸造品へのフィードバック</option>
+          <option>取材・コラボの提案</option>
+          <option>蒸留所見学の相談</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>メッセージ</label>
+        <textarea placeholder="蒸留所の職人に直接メッセージが届きます。お気軽にどうぞ。"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-navy" onclick="closeModal('message')">キャンセル</button>
+      <button class="btn btn-gold" onclick="submitForm('message')">送信する →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Request Modal -->
+<div class="modal-overlay" id="modal-request">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>📋 リストに入れたい</h3>
+        <p>仕入れ候補としてブックマーク＋蒸留所に通知</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('request')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>気になるカテゴリ（複数可）</label>
+        <div class="request-tags">
+          <span class="request-tag selected" onclick="this.classList.toggle('selected')">🥃 シングルモルト</span>
+          <span class="request-tag" onclick="this.classList.toggle('selected')">🍸 クラフトジン</span>
+          <span class="request-tag" onclick="this.classList.toggle('selected')">🔬 試験醸造品</span>
+          <span class="request-tag" onclick="this.classList.toggle('selected')">🍾 限定品</span>
+          <span class="request-tag" onclick="this.classList.toggle('selected')">🎁 ギフトセット</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>希望の入荷通知</label>
+        <select>
+          <option>新商品が出たら通知</option>
+          <option>在庫復活時に通知</option>
+          <option>限定品の先行販売時のみ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>蒸留所へのひとこと（任意）</label>
+        <textarea style="min-height:80px" placeholder="「こういう商品を作ってほしい」という要望も歓迎しています"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-navy" onclick="closeModal('request')">キャンセル</button>
+      <button class="btn btn-gold" onclick="submitForm('request')">リストに追加 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">送信しました</span>
+</div>
+
+<script>
+  // Modal
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); document.body.style.overflow = ''; });
+  });
+
+  // Toast
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  function submitForm(id) {
+    closeModal(id);
+    const messages = {
+      connect: ['🤝', 'つながり申請を送りました！48時間以内に返信があります'],
+      message: ['✉', 'メッセージを送信しました'],
+      request: ['📋', 'リストに追加しました。新着時に通知します'],
+    };
+    const [icon, msg] = messages[id] || ['✅', '送信しました'];
+    setTimeout(() => showToast(icon, msg), 200);
+  }
+
+  // Add to cart
+  function addToCart(btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓ 追加済';
+    btn.style.background = 'var(--green-ok)';
+    btn.disabled = true;
+    showToast('🛒', 'カートに追加しました');
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 2500);
+  }
+
+  // Product filter
+  function filterProducts(type, tabEl) {
+    document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    document.querySelectorAll('.product-row').forEach(row => {
+      if (type === 'all' || row.dataset.type === type) {
+        row.style.display = 'flex';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  // Video tabs
+  const videoData = [
+    { title: '「ウイスキーは待つことを教えてくれる」— 蒸留長 田中誠', sub: '2024年秋 · 余市蒸留所にて収録 · 18分' },
+    { title: '余市蒸留所 ポットスチル見学ツアー', sub: '2024年夏 · 蒸留所内部を完全公開 · 24分' },
+    { title: '熟成庫の秘密 — なぜ余市の樽は違うのか', sub: '2024年春 · 熟成庫密着取材 · 12分' },
+    { title: 'ボタニカルジン誕生秘話 — 佐藤梨花インタビュー', sub: '2023年冬 · 研究室から誕生した逸品 · 15分' },
+    { title: '創業者・田中勝雄 「北の大地でウイスキーを」(アーカイブ)', sub: '1998年 · 貴重な映像記録 · 32分' },
+    { title: '試験醸造 #7 完成発表会 — 昆布ウォッカの挑戦', sub: '2025年春 · 業界初の試み · 8分' },
+  ];
+  function switchTab(btn, idx) {
+    document.querySelectorAll('.video-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('videoTitle').textContent = videoData[idx].title;
+    document.getElementById('videoSub').textContent = videoData[idx].sub;
+  }
+  function selectVideo(item, idx) {
+    document.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('videoTitle').textContent = videoData[idx].title;
+    document.getElementById('videoSub').textContent = videoData[idx].sub;
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  // Active tab on scroll
+  const sections = ['story','interview','craftsmen','products','awards'];
+  window.addEventListener('scroll', () => {
+    const tabs = document.querySelectorAll('.action-tab');
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom > 120) {
+        tabs.forEach(t => t.classList.remove('active'));
+        const href = '#' + id;
+        const match = [...tabs].find(t => t.getAttribute('href') === href);
+        if (match) match.classList.add('active');
+      }
+    }
+  });
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>
